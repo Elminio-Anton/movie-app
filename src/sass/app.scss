@@ -2,6 +2,33 @@ $dark-blue: #0d253f;
 $light-blue: #01b4e4;
 $light-green: #90cea1;
 
-.login-container{
-    background-color: lightgreen;
+.app-container {
+
+    .aside {
+        .login-container {
+            background-color: lightgreen;
+        }
+
+        .search-form {
+            .id-input {
+
+                &::-webkit-outer-spin-button,
+                &::-webkit-inner-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+
+                &[type=number] {
+                    -moz-appearance: textfield;
+                }
+            }
+
+            .button-search-by-id {}
+        }
+
+    }
+
+    .main {
+        background-color: $light-green;
+    }
 }

@@ -31,6 +31,7 @@ const example = () => {
     })
 }
 const requestLogin = (request_token: string) => {
+    console.log('requestLogin',requestLogin);
     window.location.replace(`https://www.themoviedb.org/authenticate/${request_token}?redirect_to=http://localhost:3000/`)
 }
 const createSession = (request_token: string) => {

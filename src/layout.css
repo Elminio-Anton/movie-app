@@ -1,5 +1,26 @@
-.login-container {
-  width: min-content;
-  white-space: nowrap;
-  height: min-content;
-  display: grid; }
+.app-container {
+  height: 100vh;
+  display: grid;
+  grid-template-areas: "header header" "aside main" "footer footer";
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: 64px 1fr 64px; }
+  .app-container .header {
+    grid-area: header; }
+    .app-container .header .header-img {
+      display: block;
+      height: calc(100% - 20px);
+      margin: 0 auto;
+      padding: 10px 0; }
+  .app-container .aside {
+    grid-area: aside; }
+    .app-container .aside .login-container {
+      width: min-content;
+      white-space: nowrap;
+      height: min-content;
+      display: grid; }
+    .app-container .aside .search-form .id-input {
+      width: 55px; }
+  .app-container .main {
+    grid-area: main; }
+  .app-container .footer {
+    grid-area: footer; }
