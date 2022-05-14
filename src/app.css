@@ -1,12 +1,5 @@
 .app-container .aside .login-container {
   background-color: lightgreen; }
 
-.app-container .aside .search-form .id-input::-webkit-outer-spin-button, .app-container .aside .search-form .id-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0; }
-
-.app-container .aside .search-form .id-input[type=number] {
-  -moz-appearance: textfield; }
-
 .app-container .main {
   background-color: #90cea1; }

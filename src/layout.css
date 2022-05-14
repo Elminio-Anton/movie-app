@@ -18,9 +18,16 @@
       white-space: nowrap;
       height: min-content;
       display: grid; }
-    .app-container .aside .search-form .id-input {
+    .app-container .aside .id-input {
       width: 55px; }
   .app-container .main {
     grid-area: main; }
+    .app-container .main .loader-container {
+      height: 100%;
+      display: flex; }
+      .app-container .main .loader-container .loader {
+        margin: auto; }
+    .app-container .main .poster {
+      width: 150px; }
   .app-container .footer {
     grid-area: footer; }

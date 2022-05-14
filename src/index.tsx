@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App,{SearchResult} from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 
@@ -10,7 +10,10 @@ ReactDOM.render(
         <BrowserRouter>
             <Routes>
                 <Route path='/' element={<App />}>
-
+                    <Route path='search_by_imdb_id' element={<SearchResult/>}>
+                        {/* <Route index element={<Search/>}/> indicator*/}
+                        <Route path=':imdbId' element={<SearchResult/>}/>
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>

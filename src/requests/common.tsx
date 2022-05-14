@@ -17,7 +17,7 @@ const fetchData = async ({ url, headers = {}, method = "GET", body = {} }: { url
 const createRequestToken = () => {
     //const headers:HeadersInit = new Headers()
     return fetchData({ url: `https://api.themoviedb.org/3/authentication/token/new?api_key=${tokenv3}`, headers: {}, method: "GET", body: {} })
-    .then((response)=>response.request_token)
+        .then((response) => response.request_token)
 }
 const example = () => {
     return fetchData({
@@ -31,13 +31,13 @@ const example = () => {
     })
 }
 const requestLogin = (request_token: string) => {
-    console.log('requestLogin',requestLogin);
+    console.log('requestLogin', requestLogin);
     window.location.replace(`https://www.themoviedb.org/authenticate/${request_token}?redirect_to=http://localhost:3000/`)
 }
 const createSession = (request_token: string) => {
     return fetchData({
         url: `https://api.themoviedb.org/3/authentication/session/new?api_key=${tokenv3}&request_token=${request_token}`, headers: {}, method: 'POST', body: {}
-    }).then((response)=>response.session_id)
+    }).then((response) => response.session_id)
 }
 const getAccountDetails = (sessionId: string) => {
     return fetchData({
@@ -45,4 +45,10 @@ const getAccountDetails = (sessionId: string) => {
     })
     //https://api.themoviedb.org/3/account?api_key=<<api_key>>
 }
-export { fetchData, createRequestToken, example, requestLogin, createSession, getAccountDetails };
+const getMovieDetails = (movieId: string) => {
+    return fetchData({
+        url: `https://api.themoviedb.org/3/find/tt${movieId}?api_key=${tokenv3}&language=en-US&external_source=imdb_id`,
+        headers: {}, method: "GET", body: {}
+    })
+}
+export { getMovieDetails, fetchData, createRequestToken, example, requestLogin, createSession, getAccountDetails };
