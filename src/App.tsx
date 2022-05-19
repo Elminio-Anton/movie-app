@@ -3,9 +3,24 @@ import './app.css';
 import './fonts.css';
 import './layout.css';
 import ReactLoading from 'react-loading'
-import { getMovieDetails, createRequestToken, requestLogin, createSession, getAccountDetails } from '../src/requests/common';
-import { Link, Outlet, useNavigate, useLocation, useSearchParams, useParams } from 'react-router-dom';
+import { getTrending, getMovieDetails, createRequestToken, requestLogin, createSession, getAccountDetails, getGenres } from '../src/requests/common';
+import { Link, Outlet, useNavigate, useLocation, useSearchParams, useParams, Navigate } from 'react-router-dom';
+import { type } from '@testing-library/user-event/dist/type';
 //const HOME: (string | URL) = new URL('http://localhost:3000/')
+type Trending = {
+    page: number,
+    results: [MovieInfo],
+    total_pages: number,
+    total_results: number,
+}
+type MovieInfo = {
+    poster_path: (string | null),
+    release_date: string,
+    genre_ids: [number],
+    original_title: string,
+    vote_average: number,
+    id:number,
+}
 
 const request_token = (() => {
     const local = window.localStorage;
@@ -35,17 +50,43 @@ const sessionId = (() => {
         }
     }
 })()
-
+let genres = (() => {
+    let innerGenres: { id: number, name: string };
+    function isGenreKey<T>(
+        genres: T,
+        id: number,
+    ): id is keyof Omit<T, string | symbol> {
+        return id in innerGenres;
+    }
+    return {
+        set: (genres: { id: number, name: string }) => {
+            innerGenres = genres
+        },
+        getByIds: (genre_ids: [number]) => {
+            return genre_ids.map(id => isGenreKey(innerGenres, id) ? genres[id] : '')
+        },
+        get: () => {
+            return innerGenres;
+        }
+    }
+})()
+getGenres().then((genresArr) => {
+    //console.log('GENRES!!!!!', genres);
+    genres.set(genresArr.genres.reduce((newGenresObject: Object, genre: { id: number, name: string }) =>
+        Object.assign(newGenresObject, { [genre.id]: genre.name }), {}
+    ))
+    //console.log('GENRES!!!!!', genres);
+})
 function LoginLogout() {
     let navigate = useNavigate()
     let location = useLocation()
     let searchParams = new URLSearchParams(location.search)
-    console.log('searchParams', searchParams, typeof searchParams);
-    console.log('location', location.pathname, location.search);
+    //console.log('searchParams', searchParams, typeof searchParams);
+    //console.log('location', location.pathname, location.search);
     //debugger
     const initToken = (updateSession: Function, updateName: Function) => {
         if (searchParams.get("approved") === "true") {
-            console.log('params', searchParams)
+            //console.log('params', searchParams)
             request_token.set(String(searchParams.get("request_token")))
             if (sessionId.check() === false)
                 createSession(request_token.get())
@@ -140,8 +181,11 @@ function FindByIMDBId() {
         if (inputId.current !== null) {
             inputId.current.value = //String(parseInt(event.currentTarget.value) || '')
                 inputId.current.value.split('').filter(number => +number === +number).join('')
-            navigate(`/search_by_imdb_id/${inputId.current.value}`)
-            console.log(typeof inputId.current.value);
+            if (inputId.current.value === '')
+                navigate('/')
+            else
+                navigate(`/search_by_imdb_id/${inputId.current.value}`)
+            //console.log('inputId.current.value', typeof inputId.current.value);
         }
         //params = target.value
     }
@@ -154,32 +198,8 @@ function FindByIMDBId() {
 
     )
 }
-/* function Loading(){
-    return(
 
-    )
-} */
 export function SearchResult() {
-    /*     let params = useParams()
-        //let [loading, setLoading] = useState(true);
-        let [ready, setReady] = useState(false)
-        if (params.imdbId && params.imdbId.length === 7)
-            showMovie()
-        else if (ready) {
-            return (
-                <Fragment>
-                    <div>{String(movieDetails)}</div>
-                    <Outlet />
-                </Fragment>
-            )
-        } else {
-            //if (ready) setReady(false)
-            return (
-                <div className='loader-container'>
-                    <ReactLoading type='spinningBubbles' color='#01b4e4' className="loader" height={200} width={200} />
-                </div>
-            )
-        } */
     let params = useParams()
     let [ready, setReady] = useState(false)
     let [movieDetails, setMovieDetails] = useState({
@@ -200,38 +220,47 @@ export function SearchResult() {
     useEffect(() => {
         getMovieDetails(String(params.imdbId))
             .then((movieData) => {
-                console.log('movieData', movieData)
-                setMovieDetails(movieData.movie_results[0])
-                setReady(true)
-                //setLoading(false)
+                //console.log('movieData', movieData)
+                if (movieData.movie_results.length === 0)
+                    setMovieDetails({
+                        "genre_ids": [],
+                        "original_language": "unknown",
+                        "original_title": "unknown",
+                        "poster_path": "unknown",
+                        "video": false,
+                        "vote_average": 0.001,
+                        "overview": "unknown",
+                        "release_date": "unknown",
+                        "vote_count": 0,
+                        "title": "unknown",
+                        "adult": false,
+                        "popularity": 0.001
+                    })
+                else {
+                    setMovieDetails(movieData.movie_results[0])
+                    setReady(true)
+                }
             })
     }, [fullId])
     useEffect(() => {
         if (params.imdbId && params.imdbId.length === 7)
-            if (fullId === params.imdbId)
+            if (fullId === params.imdbId && movieDetails.original_title !== 'unknown')
                 setReady(true)
             else
                 setFullId(params.imdbId)
         else if (ready && params.imdbId && params.imdbId.length !== 7)
             setReady(false)
     }, [params.imdbId])
-    /*     if (params.imdbId && params.imdbId.length === 7)
-            setFullId(params.imdbId)
-        else if (ready && params.imdbId && params.imdbId.length !== 7) {
-            setReady(false)
-        }
-        else */
+
     if (ready && params.imdbId && params.imdbId.length === 7)
         return (
             <Fragment>
                 <img className='poster' src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path}`}
-                //data-src={`/t/p/w300_and_h450_bestv2${movieDetails.poster_path}`}
-                //data-srcset={`/t/p/w300_and_h450_bestv2${movieDetails.poster_path} 1x, /t/p/w600_and_h900_bestv2${movieDetails.poster_path} 2x`}
-                alt="Пила 3" 
-                srcSet={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path} 1x, https://www.themoviedb.org/t/p/w600_and_h900_bestv2${movieDetails.poster_path} 2x`}/>
-
+                    alt={movieDetails.original_title}
+                    srcSet={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path} 1x, https://www.themoviedb.org/t/p/w600_and_h900_bestv2${movieDetails.poster_path} 2x`} />
 
                 <div>Title: {movieDetails.original_title}</div>
+                <div>Genres: {movieDetails.genre_ids.map(id => genres[id]).join(', ')}</div>
                 <div>Average vote: {movieDetails.vote_average}</div>
                 <div>Vote count: {movieDetails.vote_count}</div>
             </Fragment>
@@ -243,8 +272,115 @@ export function SearchResult() {
         </div>
     )
 }
-function App() {
+export function Trending() {
+    /*const TrendingMovies = React.lazy(()=>import('./lazyComponents/trendingMovies.tsx'))
+    <Suspense fallback={<div>Loading...</div>}>
+        <TrendingMovies/>
+    </Suspense>*/
+    let [searchParams, setSearchParams] = useSearchParams()
+    let [loading, setLoading] = useState(true)
+    let [trendingMovies, setTrendingMovies]: [(Trending | undefined), any] = useState()
+    useEffect(() => {
+        getTrending(searchParams.get('type'), searchParams.get('period')).then(
+            (response) => {
+                console.log('getTrending!!!!!');
+                if (response) {
+                    setTrendingMovies(response)
+                    setLoading(false)
+                }
+            }
+        )
+    }, [searchParams])
+    const calcMoviesPerPage = () => {
 
+    }
+    const calcPagesAmount = () => {
+
+    }
+    return loading ?
+        (
+            <div className='loader-container'>
+                <ReactLoading type='spinningBubbles' color='#01b4e4' className="loader" height={200} width={200} />
+            </div>
+        ) :
+        (
+            <Fragment>
+                <div className='popular-movies-container'>
+                    {trendingMovies && trendingMovies.results.map(
+                        movie => <SmallTMDBObjectInfo
+                            posterPath={movie.poster_path || 'no poster path'}
+                            originTitle={movie.original_title}
+                            key = {movie.id}
+                            genre_ids={movie.genre_ids}
+                            tmdbRating = {movie.vote_average}
+                            releaseDate = {new Date(movie.release_date)}
+                        />
+                    )
+                    }
+                </div>
+                <div className='pagination-container'>pagination will be there</div>
+            </Fragment>
+        )
+}
+const FilterTrending = () => {
+    const navigate = useNavigate()
+    const [searchParams, setSearchParams] = useSearchParams()
+    const typeSelect = useRef<HTMLSelectElement>(null)
+    const periodSelect = useRef<HTMLSelectElement>(null)
+    /*     let defaultType = 'movie';
+        let defaultPeriod = 'week';
+        useEffect(() => {
+            defaultType = String(searchParams.get('type') ? searchParams.get('type') : 'movie')
+            defaultPeriod = String(searchParams.get('period') ? searchParams.get('period') : 'week')
+        }, []) *///new URLSearchParams(typeSelect.current && typeSelect.current.value,periodSelect.current && periodSelect.current.value))}>
+    useEffect(() => {
+        if (typeSelect.current && periodSelect.current) {
+            typeSelect.current.value = String(searchParams.get('type') ? searchParams.get('type') : 'movie')
+            periodSelect.current.value = String(searchParams.get('period') ? searchParams.get('period') : 'week')
+        }
+    }, [])
+    return (
+        <div className='trending-search'>
+            <select name="" id="trending-type" ref={typeSelect}
+            /*                 onChange={() => {
+                                let param = String(typeSelect.current && typeSelect.current.value);
+                                setSearchParams({ type: param })
+                            }} */
+            >
+                <option value="movie">movie</option>
+                <option value="all">all</option>
+                <option value="tv">tv</option>
+                <option value="person">person</option>
+            </select>
+            <select name="" id="trending-period" ref={periodSelect}
+            /*                 onChange={() => {
+                                let param = String(periodSelect.current && periodSelect.current.value);
+                                setSearchParams({ period: param })
+                            }} */
+            >
+                <option value="day">day</option>
+                <option value="week">week</option>
+            </select>
+            <button onClick={() => navigate(`trending?type=${typeSelect.current && typeSelect.current.value}&period=${periodSelect.current && periodSelect.current.value}`)}>
+                trending
+            </button>
+        </div>
+    )
+}
+
+const SmallTMDBObjectInfo = ({posterPath,originTitle,genre_ids,tmdbRating,releaseDate}:
+    {posterPath:string,originTitle:string, genre_ids: [number], tmdbRating: number, releaseDate: Date}) => {
+    return (
+        <div className='small-info'>
+            <img className='poster' src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${posterPath}`}></img>
+            <div className='genres'>Genres: {genres.getByIds(genre_ids)}</div>
+            <div className='origin-title'>Title: {originTitle}</div>
+            <div className='tmdb-rating'>Tmdb rating: {tmdbRating}</div>
+            <div className='release-date'>Release date: {releaseDate.toLocaleString('en-US',{year: 'numeric', month: 'long', day: 'numeric' })}</div>
+        </div>
+    )
+}
+function App() {
     return (
         <Fragment>
             <header className='header'>
@@ -253,6 +389,7 @@ function App() {
             <aside className="aside">
                 <LoginLogout />
                 <FindByIMDBId />
+                <FilterTrending />
             </aside>
             <main className='main'>
                 <Outlet />

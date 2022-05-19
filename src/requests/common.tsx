@@ -51,4 +51,18 @@ const getMovieDetails = (movieId: string) => {
         headers: {}, method: "GET", body: {}
     })
 }
-export { getMovieDetails, fetchData, createRequestToken, example, requestLogin, createSession, getAccountDetails };
+const getGenres = ()=>{
+    return fetchData({
+        url: `https://api.themoviedb.org/3/genre/movie/list?api_key=${tokenv3}&language=en-US`,
+        headers: {}, method: "GET", body: {}
+    })
+}
+const getTrending = (type: string | null = 'movie',period: string | null = 'week')=>{
+    let correctType = new Set(['all','tv','person','movie']).has(String(type))?String(type):'movie'
+    let correctPeriod = new Set(['day','week']).has(String(period))?String(period):'week'
+    return fetchData({
+        url: `https://api.themoviedb.org/3/trending/${correctType}/${correctPeriod}?api_key=${tokenv3}`,
+        headers: {}, method: "GET", body: {}
+    })
+}
+export { getTrending, getMovieDetails, fetchData, createRequestToken, example, requestLogin, createSession, getAccountDetails, getGenres };
