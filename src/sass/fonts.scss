@@ -11,3 +11,24 @@
         }
     }
 }
+.main{
+    .small-info{
+        .rating{
+            font-weight: 900;
+        }
+        .tmdb-rating{
+            .red{
+                color: rgb(255,0,0);
+            }
+            .light-green{
+                color: rgb(0,100,0);
+            }
+            .green{
+                color: rgb(0,128,0);
+            }
+            .dark-green{
+                color: rgb(0,100,0);
+            }
+        }
+    }
+}

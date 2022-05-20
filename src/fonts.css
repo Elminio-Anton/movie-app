@@ -6,3 +6,18 @@
 
 .app-container .aside .imdb-search-label {
   text-decoration: dotted underline 0.5px; }
+
+.main .small-info .rating {
+  font-weight: 900; }
+
+.main .small-info .tmdb-rating .red {
+  color: red; }
+
+.main .small-info .tmdb-rating .light-green {
+  color: darkgreen; }
+
+.main .small-info .tmdb-rating .green {
+  color: green; }
+
+.main .small-info .tmdb-rating .dark-green {
+  color: darkgreen; }

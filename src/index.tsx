@@ -4,6 +4,7 @@ import './index.css';
 import App,{SearchResult,Trending} from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import {homePage} from './constants'
 
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('Failed to find the root element');
@@ -13,13 +14,13 @@ root.render(
     <React.StrictMode>
         <BrowserRouter>
             <Routes>
-                <Route path='/' element={<App />}>
+                <Route path={`${homePage}`} element={<App />}>
                     <Route index element = {<Trending/>}></Route>
-                    <Route path='search_by_imdb_id' element={<SearchResult/>}>
+                    <Route path={`${homePage}/search_by_imdb_id`} element={<SearchResult/>}>
                         {/* <Route index element={<Search/>}/> indicator*/}
                         <Route path=':imdbId' element={<SearchResult/>}/>
                     </Route>
-                    <Route path='trending' element = {<Trending/>}></Route>
+                    <Route path={`${homePage}trending`} element = {<Trending/>}></Route>
                 </Route>
             </Routes>
         </BrowserRouter>

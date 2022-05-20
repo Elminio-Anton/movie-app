@@ -29,5 +29,15 @@
         margin: auto; }
     .app-container .main .poster {
       width: 150px; }
+    .app-container .main .small-info .rating {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: red; }
+    .app-container .main .small-info .release-date {
+      display: grid; }
   .app-container .footer {
     grid-area: footer; }

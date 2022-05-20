@@ -6,6 +6,7 @@ import ReactLoading from 'react-loading'
 import { getTrending, getMovieDetails, createRequestToken, requestLogin, createSession, getAccountDetails, getGenres } from '../src/requests/common';
 import { Link, Outlet, useNavigate, useLocation, useSearchParams, useParams, Navigate } from 'react-router-dom';
 import { type } from '@testing-library/user-event/dist/type';
+import {homePage} from './constants'
 //const HOME: (string | URL) = new URL('http://localhost:3000/')
 type Trending = {
     page: number,
@@ -19,7 +20,7 @@ type MovieInfo = {
     genre_ids: [number],
     original_title: string,
     vote_average: number,
-    id:number,
+    id: number,
 }
 
 const request_token = (() => {
@@ -94,7 +95,7 @@ function LoginLogout() {
                         session_id => {
                             sessionId.set(session_id)
                             updateSession(sessionId.get())
-                            navigate("/", { replace: true })
+                            navigate(`${homePage}`, { replace: true })
                             getAccountDetails(sessionId.get()).then(
                                 (account) => {
                                     if (account) {
@@ -141,7 +142,7 @@ function LoginLogout() {
     const logOut = () => {
         localStorage.clear()
         setSession(false)
-        navigate("/", { replace: true })
+        navigate(`${homePage}`, { replace: true })
         //window.location.replace(HOME)
         initToken(setSession, setAccountName)
     }
@@ -182,9 +183,9 @@ function FindByIMDBId() {
             inputId.current.value = //String(parseInt(event.currentTarget.value) || '')
                 inputId.current.value.split('').filter(number => +number === +number).join('')
             if (inputId.current.value === '')
-                navigate('/')
+                navigate(`${homePage}`)
             else
-                navigate(`/search_by_imdb_id/${inputId.current.value}`)
+                navigate(`${homePage}/search_by_imdb_id/${inputId.current.value}`)
             //console.log('inputId.current.value', typeof inputId.current.value);
         }
         //params = target.value
@@ -310,10 +311,10 @@ export function Trending() {
                         movie => <SmallTMDBObjectInfo
                             posterPath={movie.poster_path || 'no poster path'}
                             originTitle={movie.original_title}
-                            key = {movie.id}
+                            key={movie.id}
                             genre_ids={movie.genre_ids}
-                            tmdbRating = {movie.vote_average}
-                            releaseDate = {new Date(movie.release_date)}
+                            tmdbRating={movie.vote_average}
+                            releaseDate={new Date(movie.release_date)}
                         />
                     )
                     }
@@ -361,22 +362,43 @@ const FilterTrending = () => {
                 <option value="day">day</option>
                 <option value="week">week</option>
             </select>
-            <button onClick={() => navigate(`trending?type=${typeSelect.current && typeSelect.current.value}&period=${periodSelect.current && periodSelect.current.value}`)}>
+            <button onClick={() => navigate(`${homePage}/trending?type=${typeSelect.current && typeSelect.current.value}&period=${periodSelect.current && periodSelect.current.value}`)}>
                 trending
             </button>
         </div>
     )
 }
 
-const SmallTMDBObjectInfo = ({posterPath,originTitle,genre_ids,tmdbRating,releaseDate}:
-    {posterPath:string,originTitle:string, genre_ids: [number], tmdbRating: number, releaseDate: Date}) => {
+const SmallTMDBObjectInfo = ({ posterPath, originTitle, genre_ids, tmdbRating, releaseDate }:
+    { posterPath: string, originTitle: string, genre_ids: [number], tmdbRating: number, releaseDate: Date }) => {
+    let ratingColor =
+        tmdbRating === 0 ?
+            'rgb(128,128,128)' :
+            tmdbRating <= 4 ?
+                'rgb(255,0,0)' :
+                tmdbRating <= 5 ?
+                    'rgb(255,165,0)' :
+                    `rgb(0,${100 + Math.round((tmdbRating - 5) * 20)},0)`
+    let ratingStyle = { 
+        color: `#0d253f`,
+        background: `radial-gradient(circle, #90cea1 0%, #90cea1 30%, ${ratingColor} 65%)`, 
+    }
     return (
         <div className='small-info'>
             <img className='poster' src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${posterPath}`}></img>
             <div className='genres'>Genres: {genres.getByIds(genre_ids)}</div>
             <div className='origin-title'>Title: {originTitle}</div>
-            <div className='tmdb-rating'>Tmdb rating: {tmdbRating}</div>
-            <div className='release-date'>Release date: {releaseDate.toLocaleString('en-US',{year: 'numeric', month: 'long', day: 'numeric' })}</div>
+            <div className='tmdb-rating'>TMDB rating:
+                <div style={ratingStyle}
+                    className='rating'>{tmdbRating}
+                </div>
+            </div>
+            <div className='release-date'>
+                <span>Release date:</span>
+                <span>
+                    {releaseDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </span>
+            </div>
         </div>
     )
 }
