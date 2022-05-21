@@ -19,7 +19,7 @@
       height: min-content;
       display: grid; }
     .app-container .aside .id-input {
-      width: 55px; }
+      width: 60px; }
   .app-container .main {
     grid-area: main; }
     .app-container .main .loader-container {
@@ -27,17 +27,49 @@
       display: flex; }
       .app-container .main .loader-container .loader {
         margin: auto; }
-    .app-container .main .poster {
-      width: 150px; }
-    .app-container .main .small-info .rating {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background-color: red; }
-    .app-container .main .small-info .release-date {
-      display: grid; }
+    .app-container .main .small-info {
+      display: inline-grid;
+      gap: 10px 0;
+      justify-items: center;
+      padding: 10px;
+      grid-template-rows: 225px 76px 57px 38px;
+      position: relative; }
+      .app-container .main .small-info .poster {
+        width: 150px; }
+      .app-container .main .small-info .heading {
+        justify-self: left; }
+      .app-container .main .small-info .genres {
+        display: grid;
+        width: 100%;
+        height: max-content; }
+        .app-container .main .small-info .genres .genres-container {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-around; }
+          .app-container .main .small-info .genres .genres-container .genre {
+            width: max-content;
+            white-space: nowrap; }
+      .app-container .main .small-info .release-date {
+        width: 100%;
+        display: grid;
+        text-align: center; }
+      .app-container .main .small-info .original-title-container {
+        display: grid;
+        width: 100%;
+        justify-items: center; }
+        .app-container .main .small-info .original-title-container .original-title {
+          text-align: center; }
+      .app-container .main .small-info .rating {
+        position: absolute;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: red;
+        top: 210px;
+        left: 120px; }
   .app-container .footer {
     grid-area: footer; }

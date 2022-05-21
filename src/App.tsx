@@ -6,8 +6,9 @@ import ReactLoading from 'react-loading'
 import { getTrending, getMovieDetails, createRequestToken, requestLogin, createSession, getAccountDetails, getGenres } from '../src/requests/common';
 import { Link, Outlet, useNavigate, useLocation, useSearchParams, useParams, Navigate } from 'react-router-dom';
 import { type } from '@testing-library/user-event/dist/type';
-import {homePage} from './constants'
+import { homePage } from './constants'
 //const HOME: (string | URL) = new URL('http://localhost:3000/')
+const loadingColor = '#64cde9';
 type Trending = {
     page: number,
     results: [MovieInfo],
@@ -64,7 +65,8 @@ let genres = (() => {
             innerGenres = genres
         },
         getByIds: (genre_ids: [number]) => {
-            return genre_ids.map(id => isGenreKey(innerGenres, id) ? genres[id] : '')
+            return genre_ids.map(id => isGenreKey(innerGenres, id) ? innerGenres[id] : ''
+            )
         },
         get: () => {
             return innerGenres;
@@ -261,7 +263,7 @@ export function SearchResult() {
                     srcSet={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path} 1x, https://www.themoviedb.org/t/p/w600_and_h900_bestv2${movieDetails.poster_path} 2x`} />
 
                 <div>Title: {movieDetails.original_title}</div>
-                <div>Genres: {movieDetails.genre_ids.map(id => genres[id]).join(', ')}</div>
+                <div>Genres: {movieDetails.genre_ids.map(id => genres.getByIds([id])).join(' ')}</div>
                 <div>Average vote: {movieDetails.vote_average}</div>
                 <div>Vote count: {movieDetails.vote_count}</div>
             </Fragment>
@@ -269,7 +271,7 @@ export function SearchResult() {
 
     else return (
         <div className='loader-container'>
-            <ReactLoading type='spinningBubbles' color='#01b4e4' className="loader" height={200} width={200} />
+            <ReactLoading type='spinningBubbles' color={loadingColor} className="loader" height={200} width={200} />
         </div>
     )
 }
@@ -310,7 +312,7 @@ export function Trending() {
                     {trendingMovies && trendingMovies.results.map(
                         movie => <SmallTMDBObjectInfo
                             posterPath={movie.poster_path || 'no poster path'}
-                            originTitle={movie.original_title}
+                            originalTitle={movie.original_title}
                             key={movie.id}
                             genre_ids={movie.genre_ids}
                             tmdbRating={movie.vote_average}
@@ -369,8 +371,16 @@ const FilterTrending = () => {
     )
 }
 
-const SmallTMDBObjectInfo = ({ posterPath, originTitle, genre_ids, tmdbRating, releaseDate }:
-    { posterPath: string, originTitle: string, genre_ids: [number], tmdbRating: number, releaseDate: Date }) => {
+const SmallTMDBObjectInfo = ({ posterPath, originalTitle, genre_ids, tmdbRating, releaseDate, width = 170, height = 466 }:
+    {
+        posterPath: string,
+        originalTitle: string,
+        genre_ids: [number],
+        tmdbRating: number,
+        releaseDate: Date,
+        width?: number,
+        height?: number
+    }) => {
     let ratingColor =
         tmdbRating === 0 ?
             'rgb(128,128,128)' :
@@ -379,25 +389,56 @@ const SmallTMDBObjectInfo = ({ posterPath, originTitle, genre_ids, tmdbRating, r
                 tmdbRating <= 5 ?
                     'rgb(255,165,0)' :
                     `rgb(0,${100 + Math.round((tmdbRating - 5) * 20)},0)`
-    let ratingStyle = { 
+    let ratingStyle = {
         color: `#0d253f`,
-        background: `radial-gradient(circle, #90cea1 0%, #90cea1 30%, ${ratingColor} 65%)`, 
+        background: `radial-gradient(circle, #90cea1 0%, #90cea1 30%, ${ratingColor} 65%)`,
+    }
+    let smallInfoStyle = {
+        width: `${width}px`,
+        height: `${height}px`
+    }
+    const optimizedGenres = (genre_ids: [number]) => {
+        if (genre_ids.length <= 3)
+            return (
+                genres.getByIds(genre_ids).sort((a, b) => a.length - b.length)
+                    .map((genre, i) => <div className='genre' key={i}>{genre}</div>)
+            )
+        else {
+
+            let genres_names = genres.getByIds(genre_ids).sort((a, b) => a.length - b.length)
+            let sliced = genres_names.slice(0, 2)
+            let restSliced = genres_names.slice(2)
+
+            return (
+                <Fragment>
+                    {sliced.map((genre, i) => <div className='genre' key={i}>{genre}</div>)}
+                    <span title={restSliced.join(' ')}>and {restSliced.length + ' '}
+                        <span className='hidden-genres'>more...</span>
+                    </span>
+                </Fragment>
+            )
+        }
     }
     return (
-        <div className='small-info'>
+        <div className='small-info' style={smallInfoStyle}>
             <img className='poster' src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${posterPath}`}></img>
-            <div className='genres'>Genres: {genres.getByIds(genre_ids)}</div>
-            <div className='origin-title'>Title: {originTitle}</div>
-            <div className='tmdb-rating'>TMDB rating:
-                <div style={ratingStyle}
-                    className='rating'>{tmdbRating}
+            <div className='original-title-container'>
+                <span className='heading'>Original title:</span>
+                <span className='original-title'>{originalTitle}</span>
+            </div>
+            <div className='genres'><span className='heading'>Genres:</span>
+                <div className='genres-container'>
+                    {optimizedGenres(genre_ids)}{/* {genres.getByIds(genre_ids).map((genre, i) => <div className='genre' key={i}>{genre}</div>)} */}
                 </div>
             </div>
             <div className='release-date'>
-                <span>Release date:</span>
+                <span className='heading'>Release date:</span>
                 <span>
                     {releaseDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </span>
+            </div>
+            <div style={ratingStyle}
+                className='rating'>{tmdbRating}
             </div>
         </div>
     )

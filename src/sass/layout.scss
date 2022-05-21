@@ -1,4 +1,3 @@
-
 .app-container {
     height: 100vh;
     display: grid;
@@ -26,8 +25,9 @@
             height: min-content;
             display: grid;
         }
+
         .id-input {
-            width: 55px;
+            width: 60px;
         }
 
     }
@@ -38,38 +38,76 @@
         .loader-container {
             height: 100%;
             display: flex;
-            .loader{
+
+            .loader {
                 margin: auto;
             }
 
         }
-        .poster{
-            width: 150px;
-        }
-        .small-info{
 
-            .poster{
 
-            }
-            .genres{
-            }
-            .origin-title{
-            }
-            .tmdb-rating{
-            }
-            .rating{
 
+        .small-info {
+            display: inline-grid;
+            gap: 10px 0;
+            justify-items: center;
+            padding: 10px;
+            grid-template-rows: 225px 76px 57px 38px;
+            position: relative;
+
+            .poster {
+                width: 150px;
+            }
+
+            .heading {
+                justify-self: left;
+            }
+
+            .genres {
+                display: grid;
+                width: 100%;
+                height: max-content;
+
+                .genres-container {
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: space-around;
+
+                    .genre {
+                        width: max-content;
+                        white-space: nowrap;
+                    }
+                }
+            }
+
+            .release-date {
+                width: 100%;
+                display: grid;
+                text-align: center;
+            }
+
+            .original-title-container {
+                display: grid;
+                width: 100%;
+                justify-items: center;
+
+                .original-title {
+                    text-align: center;
+                }
+            }
+
+            .rating {
+                position: absolute;
+                margin: 0 auto;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 width: 40px;
                 height: 40px;
-                border-radius:50%;
+                border-radius: 50%;
                 background-color: red;
-
-            }
-            .release-date{
-                display: grid;
+                top: 210px;
+                left: 120px;
             }
         }
     }

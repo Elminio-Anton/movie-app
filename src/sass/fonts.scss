@@ -1,34 +1,74 @@
-.login-button,.logout-button{
+$dark-blue: #0d253f;
+$light-blue: #01b4e4;
+$light-green: #90cea1;
+$light-light-blue: #64cde9;
+.login-button,
+.logout-button {
     font-size: 14px;
 }
-.login-text{
+
+.login-text {
     font-size: 14px;
 }
-.app-container{
-    .aside{
+
+.app-container {
+    .aside {
         .imdb-search-label {
             text-decoration: dotted underline 0.5px;
         }
     }
 }
-.main{
-    .small-info{
-        .rating{
+
+.main {
+    .small-info {
+        *{
+            color: $dark-blue;
+        }
+        .heading {
+            color: $light-light-blue;
+        }
+        .rating {
             font-weight: 900;
         }
-        .tmdb-rating{
-            .red{
-                color: rgb(255,0,0);
+        .genres {
+            .genres-container {
+                .hidden-genres {
+                    text-decoration: dotted underline 0.5px;
+                    cursor: default;
+                }
+                .genre {}
             }
-            .light-green{
-                color: rgb(0,100,0);
+        }
+
+        .release-date {}
+
+        .original-title-container {
+            .original-title {
+                font-weight: 900;
             }
-            .green{
-                color: rgb(0,128,0);
+        }
+
+
+        .tmdb-rating {
+            .red {
+                color: rgb(255, 0, 0);
             }
-            .dark-green{
-                color: rgb(0,100,0);
+
+            .light-green {
+                color: rgb(0, 100, 0);
+            }
+
+            .green {
+                color: rgb(0, 128, 0);
+            }
+
+            .dark-green {
+                color: rgb(0, 100, 0);
             }
         }
     }
 }
+
+       
+
+

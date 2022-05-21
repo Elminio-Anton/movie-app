@@ -1,5 +1,10 @@
+* {
+  box-sizing: border-box; }
+
 .app-container .aside .login-container {
-  background-color: lightgreen; }
+  background-color: #01b4e4; }
 
 .app-container .main {
-  background-color: #90cea1; }
+  background-color: #01b4e4; }
+  .app-container .main .small-info .poster {
+    border-radius: 10px; }

@@ -1,4 +1,5 @@
-.login-button, .logout-button {
+.login-button,
+.logout-button {
   font-size: 14px; }
 
 .login-text {
@@ -7,7 +8,20 @@
 .app-container .aside .imdb-search-label {
   text-decoration: dotted underline 0.5px; }
 
+.main .small-info * {
+  color: #0d253f; }
+
+.main .small-info .heading {
+  color: #64cde9; }
+
 .main .small-info .rating {
+  font-weight: 900; }
+
+.main .small-info .genres .genres-container .hidden-genres {
+  text-decoration: dotted underline 0.5px;
+  cursor: default; }
+
+.main .small-info .original-title-container .original-title {
   font-weight: 900; }
 
 .main .small-info .tmdb-rating .red {

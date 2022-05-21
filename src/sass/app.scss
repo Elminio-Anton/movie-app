@@ -1,18 +1,27 @@
 $dark-blue: #0d253f;
 $light-blue: #01b4e4;
+$light-light-blue: #64cde9;
 $light-green: #90cea1;
+*{
+    box-sizing: border-box;
+}
 .app-container {
 
     .aside {
         .login-container {
-            background-color: lightgreen;
+            background-color: $light-blue;
         }
     }
 
     .main {
-        background-color: $light-green;
+        background-color: $light-blue;
         .loader{
             //background-color: #01b4e4;
+        }
+        .small-info{
+            .poster{
+                border-radius: 10px;
+            }
         }
     }
 }
