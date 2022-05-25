@@ -191,14 +191,28 @@ function FindByIMDBId() {
     //<button className='button-search-by-id' id='search-by-id' onClick={searchById}>Search</button>
     return (
         <Fragment>
-            <label htmlFor="searchImdb" title='Should be 7 numbers long. You can find it in URL, for example: 0489270 in https://www.imdb.com/title/tt0489270/' className='imdb-search-label'>Enter IMDB ID for movie:</label>
-            <input id='searchImdb' ref={inputId} value={params.imdbId} maxLength={7} inputMode='numeric' type='text' name='movie-id' className='id-input' onChange={beginSearch}></input>
+            <div className='search-by-imdb-container'>
+                <label 
+                htmlFor="searchImdb" 
+                title='Should be 7 or 8 numbers long. You can find it in URL, for example: 0489270 in https://www.imdb.com/title/tt0489270/' 
+                className='imdb-search-label'>Enter IMDB ID for movie:</label>
+                <input 
+                id='searchImdb' 
+                ref={inputId} 
+                value={params.imdbId} 
+                maxLength={8} 
+                inputMode='numeric' 
+                type='text' 
+                name='movie-id' 
+                className='id-input' 
+                onChange={beginSearch}></input>
+            </div>
         </Fragment>
 
     )
 }
 
-export function SearchResult() {
+export function SearchIMDBResult() {
     let params = useParams()
     let [ready, setReady] = useState(false)
     let [movieDetails, setMovieDetails] = useState({
@@ -242,20 +256,23 @@ export function SearchResult() {
             })
     }, [fullId])
     useEffect(() => {
-        if (params.imdbId && params.imdbId.length === 7)
+        if (params.imdbId && params.imdbId.length >= 7)
             if (fullId === params.imdbId && movieDetails.original_title !== 'unknown')
                 setReady(true)
-            else
+            else{
                 setFullId(params.imdbId)
-        else if (ready && params.imdbId && params.imdbId.length !== 7)
+                setReady(false)
+            }
+
+        else if (ready && params.imdbId && params.imdbId.length < 7)
             setReady(false)
     }, [params.imdbId])
 
-    if (ready && params.imdbId && params.imdbId.length === 7)
+    if (ready && params.imdbId && params.imdbId.length >= 7)
         return (
             <Fragment>
                 <img className='poster' src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path}`}
-                    alt={movieDetails.original_title}
+                    alt={movieDetails.original_title || 'poster'}
                     srcSet={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path} 1x, https://www.themoviedb.org/t/p/w600_and_h900_bestv2${movieDetails.poster_path} 2x`} />
 
                 <div>Title: {movieDetails.original_title}</div>
@@ -517,9 +534,19 @@ const SmallTMDBObjectInfo = ({ posterPath, originalTitle, genre_ids, tmdbRating,
         </div>
     )
 }
+/* const SearchByName = ()=>{
+    return(
+        <div className='search-by-name-container'>
+            <label htmlFor=""></label>
+            <input type="text" />
+            <button></button>
+        </div>
+    )
+} */
 function App() {
     return (
         <Fragment>
+
             <header className='header'>
                 <img className='header-img' src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_long_1-8ba2ac31f354005783fab473602c34c3f4fd207150182061e425d366e4f34596.svg" alt='TMBD title'></img>
             </header>
@@ -527,6 +554,7 @@ function App() {
                 <LoginLogout />
                 <FindByIMDBId />
                 <FilterTrending />
+                {/* <SearchByName/> */}
             </aside>
             <main className='main'>
                 <Outlet />

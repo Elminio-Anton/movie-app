@@ -19,8 +19,11 @@
       white-space: nowrap;
       height: min-content;
       display: grid; }
-    .app-container .aside .id-input {
-      width: 60px; }
+    .app-container .aside .search-by-imdb-container {
+      display: grid;
+      justify-items: center; }
+      .app-container .aside .search-by-imdb-container .id-input {
+        width: 67px; }
   .app-container .main {
     grid-area: main;
     width: 100%; }
@@ -29,11 +32,11 @@
       flex-wrap: nowrap;
       width: 100%;
       overflow-x: scroll; }
-      .app-container .main .popular-movies-container .loader-container {
-        height: 100%;
-        display: flex; }
-        .app-container .main .popular-movies-container .loader-container .loader {
-          margin: auto; }
+    .app-container .main .loader-container {
+      height: 100%;
+      display: flex; }
+      .app-container .main .loader-container .loader {
+        margin: auto; }
     .app-container .main .small-info {
       display: inline-grid;
       gap: 5px 0;

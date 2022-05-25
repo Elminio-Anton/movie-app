@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App,{SearchResult,Trending} from './App';
+import App,{SearchIMDBResult,Trending} from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import {homePage} from './constants'
@@ -16,9 +16,9 @@ root.render(
             <Routes>
                 <Route path={`${homePage}`} element={<App />}>
                     <Route index element = {<Trending/>}></Route>
-                    <Route path={`${homePage}/search_by_imdb_id`} element={<SearchResult/>}>
+                    <Route path={`${homePage}/search_by_imdb_id`} element={<SearchIMDBResult/>}>
                         {/* <Route index element={<Search/>}/> indicator*/}
-                        <Route path=':imdbId' element={<SearchResult/>}/>
+                        <Route path=':imdbId' element={<SearchIMDBResult/>}/>
                     </Route>
                     <Route path={`${homePage}trending`} element = {<Trending/>}>
                         <Route path=":page" element={<Trending/>}></Route>

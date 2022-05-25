@@ -27,9 +27,15 @@
             display: grid;
         }
 
-        .id-input {
-            width: 60px;
+        .search-by-imdb-container {
+            display: grid;
+            justify-items: center;
+
+            .id-input {
+                width: 67px;
+            }
         }
+
 
     }
 
@@ -42,18 +48,17 @@
             flex-wrap: nowrap;
             width: 100%;
             overflow-x: scroll;
-
-            .loader-container {
-                height: 100%;
-                display: flex;
-
-                .loader {
-                    margin: auto;
-                }
-
-            }
         }
 
+        .loader-container {
+            height: 100%;
+            display: flex;
+
+            .loader {
+                margin: auto;
+            }
+
+        }
 
 
         .small-info {
@@ -77,6 +82,7 @@
             .heading {
                 justify-self: left;
             }
+
             .genres {
                 display: grid;
                 width: 100%;
@@ -108,7 +114,7 @@
 
                 .original-title {
                     text-align: center;
-                    overflow:auto;
+                    overflow: auto;
                 }
             }
 
@@ -133,10 +139,12 @@
             width: min-content;
             padding: 5px 0;
             margin: 0 auto;
+
             .navlink-container {
                 width: min-content;
                 height: min-content;
                 padding: 0 1px;
+
                 .pagination-link {
                     display: block;
                     //width: 30px;
