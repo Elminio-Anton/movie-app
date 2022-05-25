@@ -4,7 +4,7 @@ import './fonts.css';
 import './layout.css';
 import ReactLoading from 'react-loading'
 import { getTrending, getMovieDetails, createRequestToken, requestLogin, createSession, getAccountDetails, getGenres } from '../src/requests/common';
-import { Link, Outlet, useNavigate, useLocation, useSearchParams, useParams, Navigate } from 'react-router-dom';
+import { Link, Outlet, useNavigate, useLocation, useSearchParams, useParams, Navigate, NavLink } from 'react-router-dom';
 import { type } from '@testing-library/user-event/dist/type';
 import { homePage } from './constants'
 //const HOME: (string | URL) = new URL('http://localhost:3000/')
@@ -22,6 +22,8 @@ type MovieInfo = {
     original_title: string,
     vote_average: number,
     id: number,
+    original_name: string,
+    first_air_date: string
 }
 
 const request_token = (() => {
@@ -54,20 +56,14 @@ const sessionId = (() => {
 })()
 let genres = (() => {
     let innerGenres: { id: number, name: string };
-    function isGenreKey<T>(
-        genres: T,
-        id: number,
-    ): id is keyof Omit<T, string | symbol> {
-        return id in innerGenres;
-    }
     return {
         set: (genres: { id: number, name: string }) => {
             innerGenres = genres
         },
-        getByIds: (genre_ids: [number]) => {
-            return genre_ids.map(id => isGenreKey(innerGenres, id) ? innerGenres[id] : ''
-            )
-        },
+        getByIds: (genre_ids: [number]) =>
+            Object.entries(innerGenres)
+                .filter(genre => genre_ids.some(id => id === +genre[0]))
+                .map(genre => String(genre[1])),
         get: () => {
             return innerGenres;
         }
@@ -275,25 +271,95 @@ export function SearchResult() {
         </div>
     )
 }
+
+
+const Pagination = ({ pages, activePage }: { pages: number, activePage: number }) => {
+    let [searchParams, setSearchParams] = useSearchParams()
+    if (!searchParams.get('period')) {
+        searchParams.set('period', 'week')
+        searchParams.set('type', 'movie')
+    }
+    const PaginationButton = ({ page }: { page: string }) => {
+        return <NavLink
+            to={`${homePage}/trending/${page}?${searchParams}`}
+            className={({ isActive }) =>
+                `pagination-link ${isActive ? "active-pagination" : "inactive-pagination"}`
+            }
+        > {`${page}`}</NavLink>
+    }
+    const getNearestIntegersAndDots = (
+        currentNumber: number = 1,
+        amountOfNumbersToReturn_odd: number = 1,
+        totalNumbers: number = 1
+    ) => {
+        let amountOfNumbers = amountOfNumbersToReturn_odd % 2 ? amountOfNumbersToReturn_odd : amountOfNumbersToReturn_odd - 1
+        let numbersArr: (number | string)[] = [currentNumber]
+
+        if (amountOfNumbersToReturn_odd >= totalNumbers)
+            numbersArr = [...new Array(amountOfNumbers)]
+                .map((_, i) => i + 1)
+        else if (currentNumber - ((amountOfNumbers - 1) / 2 + 1) <= 0) {
+            numbersArr = [...new Array(amountOfNumbers - 1)]
+                .map((_, i) => i + 1)
+            numbersArr.push('...', totalNumbers)
+        } else if (currentNumber + (amountOfNumbers - 1) / 2 + 1 > totalNumbers) {
+            numbersArr = [...new Array(totalNumbers)]
+                .map((_, i) => i + 1)
+                .slice(-amountOfNumbers + 1)
+            numbersArr.unshift(1, '...')
+        } else {
+            for (let i = Math.trunc((amountOfNumbers - 3) / 2); i >= 1; i--) {
+                numbersArr.push(currentNumber - i)
+                numbersArr.push(currentNumber + i)
+            }
+            numbersArr.sort((a, b) => +a - +b)
+            numbersArr.unshift(1, '...')
+            numbersArr.push('...', totalNumbers)
+        }
+        return numbersArr
+    }
+    return (
+        <ul className='pagination-list'>
+            {getNearestIntegersAndDots(activePage, 7, pages).map((page_number) => {
+                if (page_number === '...')
+                    return <span className='dots'>...</span>
+                else
+                    return <li className='navlink-container' key={page_number} style={{ width: `${String(page_number).length * 15 + 10}px` }}>
+                        <PaginationButton page={`${page_number}`}></PaginationButton>
+                    </li>
+            })}
+
+        </ul>
+    )
+
+}
 export function Trending() {
     /*const TrendingMovies = React.lazy(()=>import('./lazyComponents/trendingMovies.tsx'))
     <Suspense fallback={<div>Loading...</div>}>
         <TrendingMovies/>
     </Suspense>*/
+    let params = useParams()
     let [searchParams, setSearchParams] = useSearchParams()
     let [loading, setLoading] = useState(true)
     let [trendingMovies, setTrendingMovies]: [(Trending | undefined), any] = useState()
+    //let [page, setPage] = useState(params || '1')
+    console.log('params', params);
+    //debugger
     useEffect(() => {
-        getTrending(searchParams.get('type'), searchParams.get('period')).then(
-            (response) => {
-                console.log('getTrending!!!!!');
-                if (response) {
-                    setTrendingMovies(response)
-                    setLoading(false)
+        getTrending(
+            searchParams.get('type'),
+            searchParams.get('period'),
+            String(params.page ? params.page : '1'))
+            .then(
+                (response) => {
+                    //console.log('getTrending!!!!!');
+                    if (response) {
+                        setTrendingMovies(response)
+                        setLoading(false)
+                    }
                 }
-            }
-        )
-    }, [searchParams])
+            )
+    }, [searchParams, params])
     const calcMoviesPerPage = () => {
 
     }
@@ -312,16 +378,16 @@ export function Trending() {
                     {trendingMovies && trendingMovies.results.map(
                         movie => <SmallTMDBObjectInfo
                             posterPath={movie.poster_path || 'no poster path'}
-                            originalTitle={movie.original_title}
+                            originalTitle={movie.original_title || movie.original_name}
                             key={movie.id}
                             genre_ids={movie.genre_ids}
                             tmdbRating={movie.vote_average}
-                            releaseDate={new Date(movie.release_date)}
+                            releaseDate={new Date(movie.release_date || movie.first_air_date)}
                         />
                     )
                     }
                 </div>
-                <div className='pagination-container'>pagination will be there</div>
+                <Pagination pages={Number(trendingMovies && trendingMovies.total_pages)} activePage={Number(params.page) || 1}></Pagination>
             </Fragment>
         )
 }
@@ -434,7 +500,7 @@ const SmallTMDBObjectInfo = ({ posterPath, originalTitle, genre_ids, tmdbRating,
             <div className='release-date'>
                 <span className='heading'>Release date:</span>
                 <span>
-                    {releaseDate.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    {releaseDate.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </span>
             </div>
             <div style={ratingStyle}

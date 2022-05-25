@@ -20,7 +20,9 @@ root.render(
                         {/* <Route index element={<Search/>}/> indicator*/}
                         <Route path=':imdbId' element={<SearchResult/>}/>
                     </Route>
-                    <Route path={`${homePage}trending`} element = {<Trending/>}></Route>
+                    <Route path={`${homePage}trending`} element = {<Trending/>}>
+                        <Route path=":page" element={<Trending/>}></Route>
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>

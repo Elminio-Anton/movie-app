@@ -2,6 +2,7 @@ $dark-blue: #0d253f;
 $light-blue: #01b4e4;
 $light-green: #90cea1;
 $light-light-blue: #64cde9;
+
 .login-button,
 .logout-button {
     font-size: 14px;
@@ -21,21 +22,25 @@ $light-light-blue: #64cde9;
 
 .main {
     .small-info {
-        *{
+        * {
             color: $dark-blue;
         }
+
         .heading {
             color: $light-light-blue;
         }
+
         .rating {
             font-weight: 900;
         }
+
         .genres {
             .genres-container {
                 .hidden-genres {
                     text-decoration: dotted underline 0.5px;
                     cursor: default;
                 }
+
                 .genre {}
             }
         }
@@ -67,8 +72,17 @@ $light-light-blue: #64cde9;
             }
         }
     }
+
+    .pagination-list {
+        .dots{
+            color: $dark-blue;
+        }
+        .navlink-container {
+            .pagination-link {
+                text-decoration: none;
+                font-weight: 600;
+                color: $dark-blue;
+            }
+        }
+    }
 }
-
-       
-
-

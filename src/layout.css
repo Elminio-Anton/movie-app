@@ -2,8 +2,9 @@
   height: 100vh;
   display: grid;
   grid-template-areas: "header header" "aside main" "footer footer";
-  grid-template-columns: 250px 1fr;
-  grid-template-rows: 64px 1fr 64px; }
+  grid-template-columns: 250px calc(100% - 250px);
+  grid-template-rows: 64px 1fr 64px;
+  width: calc(100vw - 10px); }
   .app-container .header {
     grid-area: header; }
     .app-container .header .header-img {
@@ -21,19 +22,29 @@
     .app-container .aside .id-input {
       width: 60px; }
   .app-container .main {
-    grid-area: main; }
-    .app-container .main .loader-container {
-      height: 100%;
-      display: flex; }
-      .app-container .main .loader-container .loader {
-        margin: auto; }
+    grid-area: main;
+    width: 100%; }
+    .app-container .main .popular-movies-container {
+      display: flex;
+      flex-wrap: nowrap;
+      width: 100%;
+      overflow-x: scroll; }
+      .app-container .main .popular-movies-container .loader-container {
+        height: 100%;
+        display: flex; }
+        .app-container .main .popular-movies-container .loader-container .loader {
+          margin: auto; }
     .app-container .main .small-info {
       display: inline-grid;
-      gap: 10px 0;
+      gap: 5px 0;
       justify-items: center;
       padding: 10px;
-      grid-template-rows: 225px 76px 57px 38px;
+      grid-template-rows: 225px 81px 65px 45px;
       position: relative; }
+      .app-container .main .small-info > :nth-child(2),
+      .app-container .main .small-info > :nth-child(3),
+      .app-container .main .small-info > :nth-child(4) {
+        padding: 3px; }
       .app-container .main .small-info .poster {
         width: 150px; }
       .app-container .main .small-info .heading {
@@ -41,7 +52,7 @@
       .app-container .main .small-info .genres {
         display: grid;
         width: 100%;
-        height: max-content; }
+        height: 100%; }
         .app-container .main .small-info .genres .genres-container {
           display: flex;
           flex-wrap: wrap;
@@ -71,5 +82,20 @@
         background-color: red;
         top: 210px;
         left: 120px; }
+    .app-container .main .pagination-list {
+      list-style: none;
+      display: flex;
+      width: min-content;
+      padding: 5px 0;
+      margin: 0 auto; }
+      .app-container .main .pagination-list .navlink-container {
+        width: min-content;
+        height: min-content;
+        padding: 0 1px; }
+        .app-container .main .pagination-list .navlink-container .pagination-link {
+          display: block;
+          height: 20px;
+          text-align: center;
+          line-height: 20px; }
   .app-container .footer {
     grid-area: footer; }

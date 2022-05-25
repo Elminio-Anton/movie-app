@@ -35,3 +35,11 @@
 
 .main .small-info .tmdb-rating .dark-green {
   color: darkgreen; }
+
+.main .pagination-list .dots {
+  color: #0d253f; }
+
+.main .pagination-list .navlink-container .pagination-link {
+  text-decoration: none;
+  font-weight: 600;
+  color: #0d253f; }

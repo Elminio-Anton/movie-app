@@ -66,11 +66,11 @@ const getGenres = () => {
         headers: undefined, method: "GET", body: undefined
     })
 }
-const getTrending = (type: string | null = 'movie', period: string | null = 'week') => {
+const getTrending = (type: string | null = 'movie', period: string | null = 'week',page:string) => {
     let correctType = new Set(['all', 'tv', 'person', 'movie']).has(String(type)) ? String(type) : 'movie'
     let correctPeriod = new Set(['day', 'week']).has(String(period)) ? String(period) : 'week'
     return fetchData({
-        url: `https://api.themoviedb.org/3/trending/${correctType}/${correctPeriod}?api_key=${tokenv3}`,
+        url: `https://api.themoviedb.org/3/trending/${correctType}/${correctPeriod}?api_key=${tokenv3}&page=${page}`,
         headers: undefined, method: "GET", body: undefined
     })
 }

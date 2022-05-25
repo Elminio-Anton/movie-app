@@ -2,9 +2,12 @@ $dark-blue: #0d253f;
 $light-blue: #01b4e4;
 $light-light-blue: #64cde9;
 $light-green: #90cea1;
-*{
+$slightly-darker-then-background: #01A0D0;
+
+* {
     box-sizing: border-box;
 }
+
 .app-container {
 
     .aside {
@@ -15,13 +18,88 @@ $light-green: #90cea1;
 
     .main {
         background-color: $light-blue;
-        .loader{
+
+        .loader {
             //background-color: #01b4e4;
         }
-        .small-info{
-            .poster{
+
+        .small-info {
+            .poster {
                 border-radius: 10px;
             }
+
+            &> :nth-child(2),
+            > :nth-child(3),
+            > :nth-child(4) {
+                border: solid $light-light-blue 1px;
+                border-radius: 5px;
+                background-color: $slightly-darker-then-background;
+            }
         }
+
+        //scrollbar chrome
+        /*         scrollbar-color: #458245 #714826;
+        scrollbar-width: auto; */
+        //scrollbar chrome firefox opera
+        ::-webkit-scrollbar {
+            width: 24px;
+            /* ширина для вертикального скролла */
+            height: 12px;
+            /* высота для горизонтального скролла */
+            background-color: $light-light-blue;
+        }
+
+        // ползунок скроллбара
+        ::-webkit-scrollbar-thumb {
+            background-color: $dark-blue;
+            border-radius: 9em;
+            box-shadow: inset 1px 1px 10px #f3faf7;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: $light-blue;
+        }
+
+        ::-webkit-scrollbar-button:horizontal:start:decrement {
+            background:
+                linear-gradient(30deg, $light-light-blue 40%, rgba(0, 0, 0, 0) 41%),
+                linear-gradient(150deg, $light-light-blue 40%, rgba(0, 0, 0, 0) 41%),
+                linear-gradient(270deg, $light-light-blue 30%, rgba(0, 0, 0, 0) 31%);
+            background-color: $dark-blue;
+        }
+
+        ::-webkit-scrollbar-button:horizontal:end:increment {
+            background:
+                linear-gradient(210deg, $light-light-blue 40%, rgba(0, 0, 0, 0) 41%),
+                linear-gradient(330deg, $light-light-blue 40%, rgba(0, 0, 0, 0) 41%),
+                linear-gradient(90deg, $light-light-blue 30%, rgba(0, 0, 0, 0) 31%);
+            background-color: $dark-blue;
+        }
+
+        /*         ::-webkit-scrollbar-button:vertical:end:increment {
+            background:
+                linear-gradient(300deg, #02141a 40%, rgba(0, 0, 0, 0) 41%),
+                linear-gradient(60deg, #02141a 40%, rgba(0, 0, 0, 0) 41%),
+                linear-gradient(180deg, #02141a 30%, rgba(0, 0, 0, 0) 31%);
+            background-color: #f6f8f4;
+        } */
+        .pagination-list {
+            .navlink-container {
+                .pagination-link {
+                    border-radius: 50%;
+                    background-color: $slightly-darker-then-background;
+                }
+
+                .active-pagination {
+                    //background-color: red
+                    box-shadow: inset 1px 1px 10px #f3faf7;
+                }
+
+                .inactive-pagination {
+                    //background-color: green
+                }
+            }
+        }
+
     }
 }
