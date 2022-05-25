@@ -59,7 +59,8 @@
           justify-content: space-around; }
           .app-container .main .small-info .genres .genres-container .genre {
             width: max-content;
-            white-space: nowrap; }
+            white-space: nowrap;
+            padding-right: 2px; }
       .app-container .main .small-info .release-date {
         width: 100%;
         display: grid;
@@ -69,7 +70,8 @@
         width: 100%;
         justify-items: center; }
         .app-container .main .small-info .original-title-container .original-title {
-          text-align: center; }
+          text-align: center;
+          overflow: auto; }
       .app-container .main .small-info .rating {
         position: absolute;
         margin: 0 auto;

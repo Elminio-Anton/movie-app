@@ -1,4 +1,3 @@
-@charset "UTF-8";
 * {
   box-sizing: border-box; }
 
@@ -7,9 +6,7 @@
 
 .app-container .main {
   background-color: #01b4e4;
-  /*         scrollbar-color: #458245 #714826;
-        scrollbar-width: auto; */
-  /*         ::-webkit-scrollbar-button:vertical:end:increment {
+  /* ::-webkit-scrollbar-button:vertical:end:increment {
             background:
                 linear-gradient(300deg, #02141a 40%, rgba(0, 0, 0, 0) 41%),
                 linear-gradient(60deg, #02141a 40%, rgba(0, 0, 0, 0) 41%),
@@ -24,11 +21,15 @@
     border: solid #64cde9 1px;
     border-radius: 5px;
     background-color: #01A0D0; }
+  .app-container .main .small-info .original-title-container .original-title::-webkit-scrollbar {
+    width: 5px;
+    background-color: #64cde9; }
+  .app-container .main .small-info .original-title-container .original-title::-webkit-scrollbar-thumb {
+    background-color: #0d253f;
+    border-radius: 5px;
+    box-shadow: none; }
   .app-container .main ::-webkit-scrollbar {
     width: 24px;
-    /* ширина для вертикального скролла */
-    height: 12px;
-    /* высота для горизонтального скролла */
     background-color: #64cde9; }
   .app-container .main ::-webkit-scrollbar-thumb {
     background-color: #0d253f;

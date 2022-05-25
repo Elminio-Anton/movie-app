@@ -35,21 +35,28 @@ $slightly-darker-then-background: #01A0D0;
                 border-radius: 5px;
                 background-color: $slightly-darker-then-background;
             }
+
+            .original-title-container {
+                .original-title {
+                    &::-webkit-scrollbar {
+                        width: 5px;
+                        background-color: $light-light-blue;
+                    }
+
+                    &::-webkit-scrollbar-thumb {
+                        background-color: $dark-blue;
+                        border-radius: 5px;
+                        box-shadow: none;
+                    }
+                }
+            }
         }
 
-        //scrollbar chrome
-        /*         scrollbar-color: #458245 #714826;
-        scrollbar-width: auto; */
-        //scrollbar chrome firefox opera
         ::-webkit-scrollbar {
             width: 24px;
-            /* ширина для вертикального скролла */
-            height: 12px;
-            /* высота для горизонтального скролла */
             background-color: $light-light-blue;
         }
 
-        // ползунок скроллбара
         ::-webkit-scrollbar-thumb {
             background-color: $dark-blue;
             border-radius: 9em;
@@ -76,7 +83,7 @@ $slightly-darker-then-background: #01A0D0;
             background-color: $dark-blue;
         }
 
-        /*         ::-webkit-scrollbar-button:vertical:end:increment {
+        /* ::-webkit-scrollbar-button:vertical:end:increment {
             background:
                 linear-gradient(300deg, #02141a 40%, rgba(0, 0, 0, 0) 41%),
                 linear-gradient(60deg, #02141a 40%, rgba(0, 0, 0, 0) 41%),

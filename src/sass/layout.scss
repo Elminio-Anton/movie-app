@@ -77,7 +77,6 @@
             .heading {
                 justify-self: left;
             }
-
             .genres {
                 display: grid;
                 width: 100%;
@@ -91,6 +90,7 @@
                     .genre {
                         width: max-content;
                         white-space: nowrap;
+                        padding-right: 2px;
                     }
                 }
             }
@@ -108,6 +108,7 @@
 
                 .original-title {
                     text-align: center;
+                    overflow:auto;
                 }
             }
 

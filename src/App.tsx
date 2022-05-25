@@ -294,7 +294,6 @@ const Pagination = ({ pages, activePage }: { pages: number, activePage: number }
     ) => {
         let amountOfNumbers = amountOfNumbersToReturn_odd % 2 ? amountOfNumbersToReturn_odd : amountOfNumbersToReturn_odd - 1
         let numbersArr: (number | string)[] = [currentNumber]
-
         if (amountOfNumbersToReturn_odd >= totalNumbers)
             numbersArr = [...new Array(amountOfNumbers)]
                 .map((_, i) => i + 1)
@@ -464,21 +463,28 @@ const SmallTMDBObjectInfo = ({ posterPath, originalTitle, genre_ids, tmdbRating,
         height: `${height}px`
     }
     const optimizedGenres = (genre_ids: [number]) => {
-        if (genre_ids.length <= 3)
+        if (genres.getByIds(genre_ids).reduce((length, genre) => length + genre.length, 0) <= 20)
             return (
                 genres.getByIds(genre_ids).sort((a, b) => a.length - b.length)
-                    .map((genre, i) => <div className='genre' key={i}>{genre}</div>)
+                    .map((genre, i) =>
+                        <div className='genre' key={i}>
+                            {genre}
+                        </div>)
             )
         else {
 
             let genres_names = genres.getByIds(genre_ids).sort((a, b) => a.length - b.length)
-            let sliced = genres_names.slice(0, 2)
-            let restSliced = genres_names.slice(2)
+            let sliced = genres_names[0].length + genres_names[1].length <= 15 ?
+                { visible: genres_names.slice(0, 2), hidden: genres_names.slice(2) } :
+                { visible: genres_names.slice(0, 1), hidden: genres_names.slice(1) }
 
             return (
                 <Fragment>
-                    {sliced.map((genre, i) => <div className='genre' key={i}>{genre}</div>)}
-                    <span title={restSliced.join(' ')}>and {restSliced.length + ' '}
+                    {sliced.visible.map((genre, i) =>
+                        <div className='genre' key={i}>
+                            {genre}
+                        </div>)}
+                    <span title={sliced.hidden.join(' ')}> and {sliced.hidden.length + ' '}
                         <span className='hidden-genres'>more...</span>
                     </span>
                 </Fragment>
@@ -487,7 +493,9 @@ const SmallTMDBObjectInfo = ({ posterPath, originalTitle, genre_ids, tmdbRating,
     }
     return (
         <div className='small-info' style={smallInfoStyle}>
-            <img className='poster' src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${posterPath}`}></img>
+            <img className='poster'
+                src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${posterPath}`}
+                alt='poster'></img>
             <div className='original-title-container'>
                 <span className='heading'>Original title:</span>
                 <span className='original-title'>{originalTitle}</span>
