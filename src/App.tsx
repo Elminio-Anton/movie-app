@@ -1,9 +1,9 @@
-import React, { ChangeEventHandler, Fragment, useEffect, useState, useRef, LegacyRef } from 'react';
+import React, { ChangeEventHandler, Fragment, useEffect, useState, useRef, LegacyRef, MouseEventHandler } from 'react';
 import './app.css';
 import './fonts.css';
 import './layout.css';
 import ReactLoading from 'react-loading'
-import { getTrending, getMovieDetails, createRequestToken, requestLogin, createSession, getAccountDetails, getGenres } from '../src/requests/common';
+import { getSearchResults, getTrending, getMovieDetails, createRequestToken, requestLogin, createSession, getAccountDetails, getGenres, fetchData } from '../src/requests/common';
 import { Link, Outlet, useNavigate, useLocation, useSearchParams, useParams, Navigate, NavLink } from 'react-router-dom';
 import { type } from '@testing-library/user-event/dist/type';
 import { homePage } from './constants'
@@ -15,17 +15,21 @@ type Trending = {
     total_pages: number,
     total_results: number,
 }
+type SearchResults = {
+    results: [MovieInfo],
+    total_pages: number,
+}
 type MovieInfo = {
     poster_path: (string | null),
     release_date: string,
-    genre_ids: [number],
+    genre_ids: number[],
+    genres: { id: number, name: string }[],
     original_title: string,
     vote_average: number,
     id: number,
     original_name: string,
     first_air_date: string
 }
-
 const request_token = (() => {
     const local = window.localStorage;
     return {
@@ -60,7 +64,7 @@ let genres = (() => {
         set: (genres: { id: number, name: string }) => {
             innerGenres = genres
         },
-        getByIds: (genre_ids: [number]) =>
+        getByIds: (genre_ids: number[]) =>
             Object.entries(innerGenres)
                 .filter(genre => genre_ids.some(id => id === +genre[0]))
                 .map(genre => String(genre[1])),
@@ -192,26 +196,25 @@ function FindByIMDBId() {
     return (
         <Fragment>
             <div className='search-by-imdb-container'>
-                <label 
-                htmlFor="searchImdb" 
-                title='Should be 7 or 8 numbers long. You can find it in URL, for example: 0489270 in https://www.imdb.com/title/tt0489270/' 
-                className='imdb-search-label'>Enter IMDB ID for movie:</label>
-                <input 
-                id='searchImdb' 
-                ref={inputId} 
-                value={params.imdbId} 
-                maxLength={8} 
-                inputMode='numeric' 
-                type='text' 
-                name='movie-id' 
-                className='id-input' 
-                onChange={beginSearch}></input>
+                <label
+                    htmlFor="searchImdb"
+                    title='Should be 7 or 8 numbers long. You can find it in URL, for example: 0489270 in https://www.imdb.com/title/tt0489270/'
+                    className='imdb-search-label'>Enter IMDB ID for movie:</label>
+                <input
+                    id='searchImdb'
+                    ref={inputId}
+                    value={params.imdbId}
+                    maxLength={8}
+                    inputMode='numeric'
+                    type='text'
+                    name='movie-id'
+                    className='id-input'
+                    onChange={beginSearch}></input>
             </div>
         </Fragment>
 
     )
 }
-
 export function SearchIMDBResult() {
     let params = useParams()
     let [ready, setReady] = useState(false)
@@ -259,7 +262,7 @@ export function SearchIMDBResult() {
         if (params.imdbId && params.imdbId.length >= 7)
             if (fullId === params.imdbId && movieDetails.original_title !== 'unknown')
                 setReady(true)
-            else{
+            else {
                 setFullId(params.imdbId)
                 setReady(false)
             }
@@ -288,17 +291,15 @@ export function SearchIMDBResult() {
         </div>
     )
 }
-
-
-const Pagination = ({ pages, activePage }: { pages: number, activePage: number }) => {
+const Pagination = ({ pages, activePage, route }: { pages: number, activePage: number, route: string }) => {
     let [searchParams, setSearchParams] = useSearchParams()
-    if (!searchParams.get('period')) {
+    /* if (!searchParams.get('period')) {
         searchParams.set('period', 'week')
         searchParams.set('type', 'movie')
-    }
+    } */
     const PaginationButton = ({ page }: { page: string }) => {
         return <NavLink
-            to={`${homePage}/trending/${page}?${searchParams}`}
+            to={`${homePage}/${route}/${page}?${searchParams}`}
             className={({ isActive }) =>
                 `pagination-link ${isActive ? "active-pagination" : "inactive-pagination"}`
             }
@@ -336,9 +337,9 @@ const Pagination = ({ pages, activePage }: { pages: number, activePage: number }
     }
     return (
         <ul className='pagination-list'>
-            {getNearestIntegersAndDots(activePage, 7, pages).map((page_number) => {
+            {getNearestIntegersAndDots(activePage, 7, pages).map((page_number, id) => {
                 if (page_number === '...')
-                    return <span className='dots'>...</span>
+                    return <span className='dots' key={-id}>...</span>
                 else
                     return <li className='navlink-container' key={page_number} style={{ width: `${String(page_number).length * 15 + 10}px` }}>
                         <PaginationButton page={`${page_number}`}></PaginationButton>
@@ -376,12 +377,6 @@ export function Trending() {
                 }
             )
     }, [searchParams, params])
-    const calcMoviesPerPage = () => {
-
-    }
-    const calcPagesAmount = () => {
-
-    }
     return loading ?
         (
             <div className='loader-container'>
@@ -403,7 +398,10 @@ export function Trending() {
                     )
                     }
                 </div>
-                <Pagination pages={Number(trendingMovies && trendingMovies.total_pages)} activePage={Number(params.page) || 1}></Pagination>
+                <Pagination
+                    pages={Number(trendingMovies && trendingMovies.total_pages)}
+                    activePage={Number(params.page) || 1}
+                    route='trending' />
             </Fragment>
         )
 }
@@ -452,12 +450,11 @@ const FilterTrending = () => {
         </div>
     )
 }
-
 const SmallTMDBObjectInfo = ({ posterPath, originalTitle, genre_ids, tmdbRating, releaseDate, width = 170, height = 466 }:
     {
         posterPath: string,
         originalTitle: string,
-        genre_ids: [number],
+        genre_ids: number[],
         tmdbRating: number,
         releaseDate: Date,
         width?: number,
@@ -479,7 +476,7 @@ const SmallTMDBObjectInfo = ({ posterPath, originalTitle, genre_ids, tmdbRating,
         width: `${width}px`,
         height: `${height}px`
     }
-    const optimizedGenres = (genre_ids: [number]) => {
+    const optimizedGenres = (genre_ids: number[]) => {
         if (genres.getByIds(genre_ids).reduce((length, genre) => length + genre.length, 0) <= 20)
             return (
                 genres.getByIds(genre_ids).sort((a, b) => a.length - b.length)
@@ -534,15 +531,73 @@ const SmallTMDBObjectInfo = ({ posterPath, originalTitle, genre_ids, tmdbRating,
         </div>
     )
 }
-/* const SearchByName = ()=>{
-    return(
+const SearchByTitle = () => {
+    let searchInput = useRef<HTMLInputElement>(null)
+    let navigate = useNavigate()
+    let [searchParams, setSearchParams] = useSearchParams()
+    const goSearching: MouseEventHandler<HTMLButtonElement> = () => {
+        if (searchInput.current !== null) {
+            if (searchInput.current.value === '')
+                navigate(`${homePage}`)
+            else {
+                navigate(`${homePage}/search/?search=${searchInput.current.value}`)
+            }
+        }
+    }
+    useEffect(() => {
+        if (searchParams.get('search'))
+            if (searchInput.current !== null && searchInput.current.value !== String(searchParams.get('search')))
+                searchInput.current.value = String(searchParams.get('search'))
+    }, [searchParams])
+    return (
         <div className='search-by-name-container'>
-            <label htmlFor=""></label>
-            <input type="text" />
-            <button></button>
+            <label
+                htmlFor="search-by-name"
+                className='label'>Keyword to search in titles:</label>
+            <input type="text"
+                id='search-by-name'
+                ref={searchInput}
+                className="input"></input>
+            <button
+                className='button'
+                onClick={goSearching}>Search!</button>
         </div>
     )
-} */
+}
+export const SearchResults = () => {
+    let { page } = useParams()
+    let [searchParams, setSearchParams] = useSearchParams()
+    let [searchResults, setSearchResults]: [(SearchResults | undefined), any] = useState()
+    //let { movies } = response
+    //params.page
+    useEffect(() => {
+        if (searchParams.get('search')) {
+            getSearchResults(String(searchParams.get('search')), parseInt(page || '1'))
+                .then(setSearchResults)
+        }
+    }, [searchParams,page])
+    return (
+        <Fragment>
+            <div className='popular-movies-container'>
+                {searchResults && searchResults.results.map(
+                    movie => <SmallTMDBObjectInfo
+                        posterPath={movie.poster_path || 'no poster path'}
+                        originalTitle={movie.original_title || movie.original_name}
+                        key={movie.id}
+                        genre_ids={movie.genres.map(({ id }) => id)}
+                        tmdbRating={movie.vote_average}
+                        releaseDate={new Date(movie.release_date || movie.first_air_date)}
+                    />
+                )
+                }
+            </div>
+            <Pagination
+                pages={searchResults && searchResults.total_pages || 1}
+                activePage={parseInt(page || '1')}
+                route='search' />
+        </Fragment>
+    )
+}
 function App() {
     return (
         <Fragment>
@@ -554,7 +609,7 @@ function App() {
                 <LoginLogout />
                 <FindByIMDBId />
                 <FilterTrending />
-                {/* <SearchByName/> */}
+                <SearchByTitle />
             </aside>
             <main className='main'>
                 <Outlet />
@@ -564,5 +619,11 @@ function App() {
         </Fragment>
     );
 }
+
+/* getSearchResults('ghost').then((data) => {
+    console.log('!!!!!!!!!!');
+    console.log(data);
+    console.log('!!!!!!!!!!');
+}) */
 
 export default App;

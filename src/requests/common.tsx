@@ -66,7 +66,7 @@ const getGenres = () => {
         headers: undefined, method: "GET", body: undefined
     })
 }
-const getTrending = (type: string | null = 'movie', period: string | null = 'week',page:string) => {
+const getTrending = (type: string | null = 'movie', period: string | null = 'week', page: string) => {
     let correctType = new Set(['all', 'tv', 'person', 'movie']).has(String(type)) ? String(type) : 'movie'
     let correctPeriod = new Set(['day', 'week']).has(String(period)) ? String(period) : 'week'
     return fetchData({
@@ -74,4 +74,24 @@ const getTrending = (type: string | null = 'movie', period: string | null = 'wee
         headers: undefined, method: "GET", body: undefined
     })
 }
-export { getTrending, getMovieDetails, fetchData, createRequestToken, example, requestLogin, createSession, getAccountDetails, getGenres };
+const getSearchResults = (searchString: string, page: number | null = 1) => {
+    return fetchData({
+        url: `https://api.themoviedb.org/3/search/movie?api_key=${tokenv3}&query=${searchString}&page=${page}`,
+        headers: undefined, method: "GET", body: undefined
+    })
+        .then((response) =>
+            Promise.all(response.results.map(({ id }: { id: number }) => id)
+                .map((id: number) => fetchData(
+                    {
+                        url: `https://api.themoviedb.org/3/movie/${id}?api_key=4e122bba28bb00fb26ba8dd361c200fb&language=en-US`,
+                        headers: undefined, method: "GET", body: undefined
+                    }
+                ))
+            ).then(movies => { return { results: movies, total_pages: response.total_pages } })
+        )
+}
+/*         .then((data) => {
+            console.log('data', data);
+            return document.querySelector('.container').innerHTML += data
+        }) */
+export { getSearchResults, getTrending, getMovieDetails, fetchData, createRequestToken, example, requestLogin, createSession, getAccountDetails, getGenres };
