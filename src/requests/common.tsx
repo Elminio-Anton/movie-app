@@ -90,8 +90,23 @@ const getSearchResults = (searchString: string, page: number | null = 1) => {
             ).then(movies => { return { results: movies, total_pages: response.total_pages } })
         )
 }
+const getDirectors = (id: number) => {
+    return fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=4e122bba28bb00fb26ba8dd361c200fb`)
+        .then(response => response.json())
+        .then((jsonData) => jsonData.crew && jsonData.crew.filter(({ job }: { job: string }) => job === 'Director'))
+}
 /*         .then((data) => {
             console.log('data', data);
             return document.querySelector('.container').innerHTML += data
         }) */
-export { getSearchResults, getTrending, getMovieDetails, fetchData, createRequestToken, example, requestLogin, createSession, getAccountDetails, getGenres };
+const getIMDBRating = (id:string) =>
+    fetch(`https://imdb-api.com/en/API/UserRatings/k_v4mu0b39/tt${id}`)
+        .then(response => response.json())
+        .then((jsonData) => {
+            console.log('!!!!!!!!!!');
+            console.log(jsonData,id);
+            console.log('!!!!!!!!!!');
+            return jsonData.totalRating
+        })
+
+export { getIMDBRating,getDirectors, getSearchResults, getTrending, getMovieDetails, fetchData, createRequestToken, example, requestLogin, createSession, getAccountDetails, getGenres };

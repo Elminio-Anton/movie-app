@@ -1,5 +1,22 @@
 * {
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  margin: 0px; }
+
+.app-container .header {
+  background-color: #0d253f; }
+
+.app-container .favourite-icon {
+  cursor: pointer; }
+  .app-container .favourite-icon:hover {
+    box-shadow: inset 0 0 5px #64cde9; }
+  .app-container .favourite-icon.favourite {
+    background: radial-gradient(#01b4e4 0%, #01b4e4 25%, yellow 100%); }
+    .app-container .favourite-icon.favourite svg {
+      fill: yellow; }
+  .app-container .favourite-icon.non-favourite {
+    background: radial-gradient(#01A0D0 0%, #01A0D0 25%, #0d253f 100%); }
+    .app-container .favourite-icon.non-favourite svg {
+      fill: #0d253f; }
 
 .app-container .aside .login-container {
   background-color: #01b4e4; }
@@ -13,6 +30,8 @@
                 linear-gradient(180deg, #02141a 30%, rgba(0, 0, 0, 0) 31%);
             background-color: #f6f8f4;
         } */ }
+  .app-container .main .active-drag-scroll {
+    cursor: grabbing; }
   .app-container .main .small-info .poster {
     border-radius: 10px; }
   .app-container .main .small-info > :nth-child(2),
@@ -43,6 +62,25 @@
   .app-container .main ::-webkit-scrollbar-button:horizontal:end:increment {
     background: linear-gradient(210deg, #64cde9 40%, rgba(0, 0, 0, 0) 41%), linear-gradient(330deg, #64cde9 40%, rgba(0, 0, 0, 0) 41%), linear-gradient(90deg, #64cde9 30%, rgba(0, 0, 0, 0) 31%);
     background-color: #0d253f; }
+  .app-container .main .short-info .tmdb-rating {
+    background-color: #01A0D0;
+    border: solid 1px #64cde9;
+    border-radius: 5px; }
+  .app-container .main .short-info .title {
+    background-color: #01A0D0;
+    border: solid 1px #64cde9;
+    border-radius: 5px; }
+    .app-container .main .short-info .title::-webkit-scrollbar {
+      width: 5px;
+      background-color: #64cde9; }
+    .app-container .main .short-info .title::-webkit-scrollbar-thumb {
+      background-color: #0d253f;
+      border-radius: 5px;
+      box-shadow: none; }
+  .app-container .main .movie-description .overview, .app-container .main .movie-description .genres, .app-container .main .movie-description .directors {
+    background-color: #01A0D0;
+    border: solid 1px #64cde9;
+    border-radius: 5px; }
   .app-container .main .pagination-list .navlink-container .pagination-link {
     border-radius: 50%;
     background-color: #01A0D0; }

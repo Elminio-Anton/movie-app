@@ -36,6 +36,39 @@
 .main .small-info .tmdb-rating .dark-green {
   color: darkgreen; }
 
+.main .short-info .imdbRating {
+  background-color: #fff;
+  border: 1px solid #666;
+  font-size: 18px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold; }
+  .main .short-info .imdbRating .rating {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold; }
+    .main .short-info .imdbRating .rating .ofTen {
+      color: #666;
+      font-size: 9px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: bold; }
+
+.main .short-info .tmdb-rating .logo {
+  display: inline-block;
+  font-weight: 600;
+  background: linear-gradient(to right, #c0fecf 0%, #1ed5a9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; }
+
+.main .short-info .tmdb-rating .rating {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  color: #64cde9; }
+
+.main .short-info .tmdb-rating .ofTen {
+  color: #64cde9;
+  font-size: 9px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold; }
+
 .main .pagination-list .dots {
   color: #0d253f; }
 

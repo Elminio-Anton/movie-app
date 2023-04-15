@@ -6,14 +6,37 @@ $slightly-darker-then-background: #01A0D0;
 
 * {
     box-sizing: border-box;
+    margin: 0px;
 }
 
 .app-container {
-
+    .header{
+        background-color: $dark-blue;
+    }
+    .favourite-icon{
+        &:hover{
+            box-shadow: inset 0 0 5px $light-light-blue;
+        }
+        cursor: pointer;
+        &.favourite{
+            background: radial-gradient($light-blue 0%, $light-blue 25%,yellow 100%);
+            //box-shadow: inset 0 0 5px yellow;
+            svg{
+                fill: yellow;
+            }
+        }
+        &.non-favourite{
+            background: radial-gradient($slightly-darker-then-background 0%, $slightly-darker-then-background 25%,$dark-blue 100%);
+            svg{
+                fill: $dark-blue;
+            }
+        }
+    }
     .aside {
         .login-container {
             background-color: $light-blue;
         }
+
     }
 
     .main {
@@ -22,7 +45,9 @@ $slightly-darker-then-background: #01A0D0;
         .loader {
             //background-color: #01b4e4;
         }
-
+        .active-drag-scroll{
+          cursor: grabbing;
+        }
         .small-info {
             .poster {
                 border-radius: 10px;
@@ -90,6 +115,47 @@ $slightly-darker-then-background: #01A0D0;
                 linear-gradient(180deg, #02141a 30%, rgba(0, 0, 0, 0) 31%);
             background-color: #f6f8f4;
         } */
+        .short-info{
+            .tmdb-rating{
+                background-color: $slightly-darker-then-background;
+                border: solid 1px $light-light-blue;
+                border-radius: 5px;
+                .logo{
+    
+                }
+                .rating{
+    
+                }
+                .ofTen{
+    
+                }
+            }
+            .title{
+                background-color: $slightly-darker-then-background;
+                border: solid 1px $light-light-blue;
+                border-radius: 5px;
+
+                &::-webkit-scrollbar {
+                    width: 5px;
+                    background-color: $light-light-blue;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                    background-color: $dark-blue;
+                    border-radius: 5px;
+                    box-shadow: none;
+                }
+            }
+        }
+        .movie-description{
+
+            .overview,.genres,.directors{
+                background-color: $slightly-darker-then-background;
+                border: solid 1px $light-light-blue;
+                border-radius: 5px;
+            }
+        }
+
         .pagination-list {
             .navlink-container {
                 .pagination-link {

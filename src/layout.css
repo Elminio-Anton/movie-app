@@ -4,13 +4,15 @@
   grid-template-areas: "header header" "aside main" "footer footer";
   grid-template-columns: 250px calc(100% - 250px);
   grid-template-rows: 64px 1fr 64px;
-  width: calc(100vw - 10px); }
+  width: calc(100vw - 16px);
+  margin: 0 auto; }
   .app-container .header {
-    grid-area: header; }
+    grid-area: header;
+    display: flex; }
     .app-container .header .header-img {
       display: block;
       height: calc(100% - 20px);
-      margin: 0 auto;
+      margin: auto;
       padding: 10px 0; }
   .app-container .aside {
     grid-area: aside; }
@@ -102,5 +104,110 @@
           height: 20px;
           text-align: center;
           line-height: 20px; }
+    .app-container .main .single-movie-page {
+      display: grid;
+      grid-template-areas: "poster similar" "poster recommended" "main main";
+      grid-template-columns: 235px calc(100% - 235px);
+      grid-template-rows: 225px 225px 200px; }
+      .app-container .main .single-movie-page .short-info-container {
+        width: 100%;
+        height: 100%;
+        grid-area: poster; }
+        .app-container .main .single-movie-page .short-info-container .poster {
+          display: block;
+          width: calc(100% - 10px);
+          margin: 5px auto 0 auto;
+          border-radius: 5px; }
+        .app-container .main .single-movie-page .short-info-container .short-info {
+          height: calc(450px - 337.5px);
+          display: grid;
+          grid-template-rows: max-content 1fr;
+          grid-template-columns: 225px;
+          align-items: flex-end;
+          padding: 5px;
+          gap: 5px 0;
+          width: calc(100% - 10px);
+          position: relative; }
+          .app-container .main .single-movie-page .short-info-container .short-info .favourite-icon {
+            width: min-content;
+            height: min-content;
+            border-radius: 10px;
+            position: absolute;
+            top: -10px;
+            left: 10px; }
+          .app-container .main .single-movie-page .short-info-container .short-info .title {
+            display: block;
+            margin: 0 auto;
+            padding: 5px;
+            width: fit-content;
+            text-align: center;
+            overflow: auto;
+            max-height: 74px; }
+          .app-container .main .single-movie-page .short-info-container .short-info .ratings-container {
+            display: flex;
+            justify-content: space-around;
+            width: 225px; }
+            .app-container .main .single-movie-page .short-info-container .short-info .ratings-container .imdbRating {
+              height: max-content;
+              border: 1px solid #666;
+              padding: 2px 2px 1px;
+              border-radius: 5px;
+              text-decoration: none;
+              display: inline-block;
+              width: 120px; }
+              .app-container .main .single-movie-page .short-info-container .short-info .ratings-container .imdbRating img {
+                border: none;
+                vertical-align: text-bottom; }
+              .app-container .main .single-movie-page .short-info-container .short-info .ratings-container .imdbRating a {
+                text-decoration: none;
+                color: -webkit-link;
+                cursor: pointer; }
+              .app-container .main .single-movie-page .short-info-container .short-info .ratings-container .imdbRating .rating {
+                display: inline-block;
+                padding-left: 5px; }
+              .app-container .main .single-movie-page .short-info-container .short-info .ratings-container .imdbRating .star {
+                margin-left: 3px;
+                border: none;
+                vertical-align: text-bottom; }
+            .app-container .main .single-movie-page .short-info-container .short-info .ratings-container .tmdb-rating {
+              display: inline-flex;
+              justify-content: space-between;
+              align-items: center;
+              padding-right: 5px;
+              width: 95px;
+              height: 28px; }
+              .app-container .main .single-movie-page .short-info-container .short-info .ratings-container .tmdb-rating .logo {
+                padding: 1px 3px; }
+              .app-container .main .single-movie-page .short-info-container .short-info .ratings-container .tmdb-rating .rating {
+                width: min-content; }
+      .app-container .main .single-movie-page .movie-description {
+        grid-area: main;
+        padding: 5px;
+        display: grid;
+        grid-template-rows: minmax(20px, 107px) repeat(2, max-content);
+        grid-template-columns: 100%;
+        gap: 5px 0; }
+        .app-container .main .single-movie-page .movie-description .overview {
+          padding: 5px;
+          width: 100%; }
+        .app-container .main .single-movie-page .movie-description .minor-info {
+          display: flex;
+          flex-wrap: wrap; }
+          .app-container .main .single-movie-page .movie-description .minor-info > * {
+            margin: 5px; }
+          .app-container .main .single-movie-page .movie-description .minor-info .genres {
+            display: block;
+            width: min-content;
+            white-space: nowrap;
+            padding: 5px; }
+          .app-container .main .single-movie-page .movie-description .minor-info .directors {
+            display: block;
+            padding: 5px;
+            width: min-content;
+            white-space: nowrap; }
+      .app-container .main .single-movie-page .similar-movies {
+        grid-area: similar; }
+      .app-container .main .single-movie-page .recommended-movies {
+        grid-area: recommended; }
   .app-container .footer {
     grid-area: footer; }
