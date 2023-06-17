@@ -19,13 +19,14 @@ import {
   getDirectors,
   getSearchResults,
   getTrending,
-  getMovieDetails,
+  getMovieDetailsByImdbId,
   createRequestToken,
   requestLogin,
   createSession,
   getAccountDetails,
   getGenres,
   fetchData,
+  getMovieDetailsByTmdbId,
 } from "../src/requests/common";
 import {
   Link,
@@ -84,7 +85,7 @@ type MovieInfo = {
   original_name: string;
   original_title: string;
   poster_path: string | null;
-  totalRating: string;
+  imdbRating: string;
   vote_average: number;
   vote_count: number;
   release_date: string;
@@ -296,7 +297,7 @@ function FindByIMDBId() {
     </Fragment>
   );
 }
-export function SearchIMDBResult() {
+function SearchIMDBResult() {
   let params = useParams();
   let [ready, setReady] = useState(false);
   let [movieDetails, setMovieDetails]: [MovieInfo | undefined, any] =
@@ -304,7 +305,7 @@ export function SearchIMDBResult() {
   let [fullId, setFullId] = useState("");
   let SingeMoviePageMemo = React.memo(SingeMoviePage);
   useEffect(() => {
-    getMovieDetails(String(params.imdbId)).then((movieData) => {
+    getMovieDetailsByImdbId(String(params.imdbId)).then((movieData) => {
       //console.log('movieData', movieData)
       if (movieData.movie_results.length === 0) setMovieDetails(undefined);
       else {
@@ -312,20 +313,14 @@ export function SearchIMDBResult() {
           getDirectors(movieData.movie_results[0].id),
           getIMDBRating(String(params.imdbId)),
         ]).then((result) => {
-          /*                         console.log('!!!!!!!!!!');
-                                                console.log('result', result);
-                                                console.log('!!!!!!!!!!'); */
           setMovieDetails(
             Object.assign(
               movieData.movie_results[0],
+              //prettier-ignore
               result[0]
-                ? {
-                    directors: result[0].map(
-                      ({ name }: { name: string }) => name
-                    ),
-                  }
+                ? { directors: result[0].map(({ name }: { name: string }) => name ),}
                 : {},
-              { imdbId: params.imdbId, totalRating: result[1] }
+              { imdbId: params.imdbId, imdbRating: result[1] }
             )
           );
           setReady(true);
@@ -447,7 +442,7 @@ const Pagination = ({
     </ul>
   );
 };
-export function Trending() {
+function Trending() {
   let params = useParams();
   let speed: number = 1;
   let [searchParams, setSearchParams] = useSearchParams();
@@ -523,6 +518,7 @@ export function Trending() {
               genre_ids={movie.genre_ids}
               tmdbRating={Math.round(movie.vote_average * 10) / 10}
               releaseDate={new Date(movie.release_date || movie.first_air_date)}
+              movieId={movie.id}
             />
           ))}
       </div>
@@ -535,11 +531,11 @@ export function Trending() {
   );
 }
 const IMDBRating = ({
-  totalRating,
+  imdbRating,
   title,
   imdbId,
 }: {
-  totalRating: string;
+  imdbRating: string;
   title: string;
   imdbId: string;
 }) => {
@@ -552,7 +548,7 @@ const IMDBRating = ({
         />
       </a>
       <span className="rating">
-        {totalRating}
+        {imdbRating}
         <span className="ofTen">/10</span>
       </span>
       <img
@@ -642,6 +638,7 @@ const SmallTMDBObjectInfo = ({
   genre_ids,
   tmdbRating,
   releaseDate,
+  movieId,
   width = 170,
   height = 466,
 }: {
@@ -650,6 +647,7 @@ const SmallTMDBObjectInfo = ({
   genre_ids: number[];
   tmdbRating: number;
   releaseDate: Date;
+  movieId: number;
   width?: number;
   height?: number;
 }) => {
@@ -713,10 +711,13 @@ const SmallTMDBObjectInfo = ({
   };
   return (
     <div className="small-info" style={smallInfoStyle}>
-      <img
-        className="poster"
-        src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${posterPath}`}
-        alt="poster"></img>
+      <a href={`${homePage}/movie/${movieId}`}>
+        <img
+          className="poster"
+          src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${posterPath}`}
+          alt="poster"
+          dataset-movieid={movieId}></img>
+      </a>
       <div className="original-title-container">
         <span className="heading">Original title:</span>
         <span className="original-title">{originalTitle}</span>
@@ -780,7 +781,7 @@ const SearchByTitle = () => {
     </div>
   );
 };
-export const SearchResults = () => {
+const SearchResults = () => {
   let { page } = useParams();
   let [searchParams, setSearchParams] = useSearchParams();
   let [searchResults, setSearchResults]: [SearchResults | undefined, any] =
@@ -807,6 +808,7 @@ export const SearchResults = () => {
               genre_ids={movie.genres.map(({ id }) => id)}
               tmdbRating={movie.vote_average}
               releaseDate={new Date(movie.release_date || movie.first_air_date)}
+              movieId={movie.id}
             />
           ))}
       </div>
@@ -837,8 +839,8 @@ const FavouriteIcon = ({ id }: { id: number }) => {
         fill="none"
         xmlns="http://www.w3.org/2000/svg">
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M11 3.25H8.86465L7.86465 9.25H3.75V20.75H20.25V9.25H14.25V6.5C14.25 4.70507 12.7949 3.25 11 3.25ZM9.25 19.25H18.75V10.75H12.75V6.5C12.75 5.5335 11.9665 4.75 11 4.75H10.1353L9.25 10.0621V19.25ZM7.75 19.25V10.75H5.25V19.25H7.75Z"
         />
       </svg>
@@ -873,7 +875,7 @@ const NotInUseIMDBPlugin = ({
   //let imdbRating = useRef<HTMLSpanElement>(null)
 
   useLayoutEffect(() => {
-    console.log("IMDBPlugin useeffect is working!!!!!");
+    //console.log("IMDBPlugin useeffect is working!!!!!");
     let script = document.createElement("script");
     script.src =
       "https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/js/rating.js";
@@ -881,7 +883,7 @@ const NotInUseIMDBPlugin = ({
     script.id = "imdb-script";
     //imdbRating.current?.appendChild(script)
     if (!document.querySelector("#imdb-script")) {
-      console.log("IMDBPlugin adding script");
+      //console.log("IMDBPlugin adding script");
       document.body.appendChild(script);
     }
     return () => {
@@ -900,7 +902,7 @@ const NotInUseIMDBPlugin = ({
         data-user="ur53822607"
         data-title={`tt${imdbId}`}
         data-style="p1">
-        {(console.log("rendering!!!!!!!!!!!!!!!!"), "")}
+        {/* {(console.log("rendering!!!!!!!!!!!!!!!!"), "")} */}
         <a href={`https://www.imdb.com/title/tt${imdbId}/?ref_=plg_rt_1`}>
           <img
             src="https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/images/imdb_46x22.png"
@@ -914,6 +916,7 @@ const NotInUseIMDBPlugin = ({
   /////IMDB rating plugin
 };
 const SingeMoviePage = (movieDetails: MovieInfo) => {
+  console.dir(movieDetails)
   return (
     <div className="single-movie-page">
       <div className="short-info-container">
@@ -927,11 +930,11 @@ const SingeMoviePage = (movieDetails: MovieInfo) => {
           <p className="title">Title: {movieDetails.original_title}</p>
           <div className="ratings-container">
             <IMDBRating
-              totalRating={movieDetails.totalRating}
+              imdbRating={movieDetails.imdbRating}
               title={movieDetails.original_title}
               imdbId={movieDetails.imdbId}
             />
-            <TMDBRating rating={movieDetails.vote_average} />
+            <TMDBRating rating={Math.trunc(movieDetails.vote_average*10)/10} />
           </div>
           <FavouriteIcon id={movieDetails.id} />
         </div>
@@ -965,6 +968,46 @@ const SingeMoviePage = (movieDetails: MovieInfo) => {
     </div>
   );
 };
+const MoviePageById = () => {
+  const id = String(useParams().id);
+  const [movieDetails, setMovieDetails]: [MovieInfo | undefined, any] =
+    useState();
+
+  let SingeMoviePageMemo = React.memo(SingeMoviePage);
+  useEffect(()=>{
+    getMovieDetailsByTmdbId(id).then((movieData) => {
+      //console.log('movieData', movieData)
+      if (movieData.length === 0) setMovieDetails(undefined);
+      else {
+        Promise.all([
+          getDirectors(id),
+          getIMDBRating(movieData.imdb_id),
+        ]).then(([directors,imdb_rating]) => {
+          setMovieDetails(
+            Object.assign(
+              movieData,
+              //prettier-ignore
+              directors.length
+                ? { directors: directors.map(({ name }: { name: string }) => name ),}
+                : {},
+              { imdbId: movieData.imdb_id, imdbRating: imdb_rating},
+              { genre_ids: movieData.genres.map((genre:{id:string})=>genre.id)}
+            )
+          );
+        });
+      }
+    });
+  },[])
+/*   getMovieDetailsByTmdbId(id).then((fetchedMovieDetails) => {
+    setMovieDetails(fetchedMovieDetails);
+  }); */
+  //return <SingeMoviePageMemo {...movieDetails} />;
+  if(movieDetails)
+    return (<SingeMoviePageMemo {...movieDetails} />);
+  else
+    return <></>
+};
+
 const SmallestTMDBObjectInfo = () => {
   return <></>;
 };
@@ -992,10 +1035,6 @@ function App() {
   );
 }
 
-/* getSearchResults('ghost').then((data) => {
-                console.log('!!!!!!!!!!');
-            console.log(data);
-            console.log('!!!!!!!!!!');
-}) */
 
+export { MoviePageById, SearchResults, Trending, SearchIMDBResult };
 export default App;
