@@ -2,177 +2,209 @@ $dark-blue: #0d253f;
 $light-blue: #01b4e4;
 $light-light-blue: #64cde9;
 $light-green: #90cea1;
-$slightly-darker-then-background: #01A0D0;
+$slightly-darker-then-background: #01a0d0;
 
 * {
-    box-sizing: border-box;
-    margin: 0px;
+  box-sizing: border-box;
+  margin: 0px;
 }
 
 .app-container {
-    .header{
-        background-color: $dark-blue;
+  .header {
+    background-color: $dark-blue;
+  }
+  .favourite-icon {
+    &:hover {
+      box-shadow: inset 0 0 5px $light-light-blue;
     }
-    .favourite-icon{
-        &:hover{
-            box-shadow: inset 0 0 5px $light-light-blue;
-        }
-        cursor: pointer;
-        &.favourite{
-            background: radial-gradient($light-blue 0%, $light-blue 25%,yellow 100%);
-            //box-shadow: inset 0 0 5px yellow;
-            svg{
-                fill: yellow;
-            }
-        }
-        &.non-favourite{
-            background: radial-gradient($slightly-darker-then-background 0%, $slightly-darker-then-background 25%,$dark-blue 100%);
-            svg{
-                fill: $dark-blue;
-            }
-        }
+    cursor: pointer;
+    &.favourite {
+      background: radial-gradient($light-blue 0%, $light-blue 25%, yellow 100%);
+      //box-shadow: inset 0 0 5px yellow;
+      svg {
+        fill: yellow;
+      }
     }
-    .aside {
-        .login-container {
-            background-color: $light-blue;
-        }
-
+    &.non-favourite {
+      background: radial-gradient(
+        $slightly-darker-then-background 0%,
+        $slightly-darker-then-background 25%,
+        $dark-blue 100%
+      );
+      svg {
+        fill: $dark-blue;
+      }
     }
+  }
+  .aside {
+    .login-container {
+      background-color: $light-blue;
+    }
+  }
 
-    .main {
-        background-color: $light-blue;
+  .main {
+    background-color: $light-blue;
 
-        .loader {
-            //background-color: #01b4e4;
+    .loader {
+      //background-color: #01b4e4;
+    }
+    .active-drag-scroll {
+      cursor: grabbing;
+    }
+    .single-movie-page {
+      .similar-movies-container,
+      .recommended-movies-container {
+        .h5 {
+          background-color: $slightly-darker-then-background;
+          user-select: none;
+          border-radius: 3px;
         }
-        .active-drag-scroll{
-          cursor: grabbing;
-        }
-        .small-info {
+        .similar-movies,
+        .recommended-movies {
+          .smallest {
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
             .poster {
-                border-radius: 10px;
             }
-
-            &> :nth-child(2),
-            > :nth-child(3),
-            > :nth-child(4) {
-                border: solid $light-light-blue 1px;
-                border-radius: 5px;
-                background-color: $slightly-darker-then-background;
+            .title {
+              user-select: none;
+              background-color: $light-light-blue;
+              border-radius: 10px;
             }
-
-            .original-title-container {
-                .original-title {
-                    &::-webkit-scrollbar {
-                        width: 5px;
-                        background-color: $light-light-blue;
-                    }
-
-                    &::-webkit-scrollbar-thumb {
-                        background-color: $dark-blue;
-                        border-radius: 5px;
-                        box-shadow: none;
-                    }
-                }
-            }
+          }
         }
+      }
+    }
 
-        ::-webkit-scrollbar {
-            width: 24px;
+    .small-info {
+      .poster {
+        border-radius: 10px;
+      }
+
+      & > :nth-child(2),
+      > :nth-child(3),
+      > :nth-child(4) {
+        border: solid $light-light-blue 1px;
+        border-radius: 5px;
+        background-color: $slightly-darker-then-background;
+      }
+
+      .original-title-container {
+        .original-title {
+          &::-webkit-scrollbar {
+            width: 5px;
             background-color: $light-light-blue;
-        }
+          }
 
-        ::-webkit-scrollbar-thumb {
+          &::-webkit-scrollbar-thumb {
             background-color: $dark-blue;
-            border-radius: 9em;
-            box-shadow: inset 1px 1px 10px #f3faf7;
+            border-radius: 5px;
+            box-shadow: none;
+          }
         }
+      }
+    }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: $light-blue;
-        }
+    ::-webkit-scrollbar {
+      width: 24px;
+      background-color: $light-light-blue;
+    }
 
-        ::-webkit-scrollbar-button:horizontal:start:decrement {
-            background:
-                linear-gradient(30deg, $light-light-blue 40%, rgba(0, 0, 0, 0) 41%),
-                linear-gradient(150deg, $light-light-blue 40%, rgba(0, 0, 0, 0) 41%),
-                linear-gradient(270deg, $light-light-blue 30%, rgba(0, 0, 0, 0) 31%);
-            background-color: $dark-blue;
-        }
+    ::-webkit-scrollbar-thumb {
+      background-color: $dark-blue;
+      border-radius: 9em;
+      box-shadow: inset 1px 1px 10px #f3faf7;
+    }
 
-        ::-webkit-scrollbar-button:horizontal:end:increment {
-            background:
-                linear-gradient(210deg, $light-light-blue 40%, rgba(0, 0, 0, 0) 41%),
-                linear-gradient(330deg, $light-light-blue 40%, rgba(0, 0, 0, 0) 41%),
-                linear-gradient(90deg, $light-light-blue 30%, rgba(0, 0, 0, 0) 31%);
-            background-color: $dark-blue;
-        }
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: $light-blue;
+    }
 
-        /* ::-webkit-scrollbar-button:vertical:end:increment {
+    ::-webkit-scrollbar-button:horizontal:start:decrement {
+      background: linear-gradient(
+          30deg,
+          $light-light-blue 40%,
+          rgba(0, 0, 0, 0) 41%
+        ),
+        linear-gradient(150deg, $light-light-blue 40%, rgba(0, 0, 0, 0) 41%),
+        linear-gradient(270deg, $light-light-blue 30%, rgba(0, 0, 0, 0) 31%);
+      background-color: $dark-blue;
+    }
+
+    ::-webkit-scrollbar-button:horizontal:end:increment {
+      background: linear-gradient(
+          210deg,
+          $light-light-blue 40%,
+          rgba(0, 0, 0, 0) 41%
+        ),
+        linear-gradient(330deg, $light-light-blue 40%, rgba(0, 0, 0, 0) 41%),
+        linear-gradient(90deg, $light-light-blue 30%, rgba(0, 0, 0, 0) 31%);
+      background-color: $dark-blue;
+    }
+
+    /* ::-webkit-scrollbar-button:vertical:end:increment {
             background:
                 linear-gradient(300deg, #02141a 40%, rgba(0, 0, 0, 0) 41%),
                 linear-gradient(60deg, #02141a 40%, rgba(0, 0, 0, 0) 41%),
                 linear-gradient(180deg, #02141a 30%, rgba(0, 0, 0, 0) 31%);
             background-color: #f6f8f4;
         } */
-        .short-info{
-            .tmdb-rating{
-                background-color: $slightly-darker-then-background;
-                border: solid 1px $light-light-blue;
-                border-radius: 5px;
-                .logo{
-    
-                }
-                .rating{
-    
-                }
-                .ofTen{
-    
-                }
-            }
-            .title{
-                background-color: $slightly-darker-then-background;
-                border: solid 1px $light-light-blue;
-                border-radius: 5px;
-
-                &::-webkit-scrollbar {
-                    width: 5px;
-                    background-color: $light-light-blue;
-                }
-
-                &::-webkit-scrollbar-thumb {
-                    background-color: $dark-blue;
-                    border-radius: 5px;
-                    box-shadow: none;
-                }
-            }
+    .short-info {
+      .tmdb-rating {
+        background-color: $slightly-darker-then-background;
+        border: solid 1px $light-light-blue;
+        border-radius: 5px;
+        .logo {
         }
-        .movie-description{
+        .rating {
+        }
+        .ofTen {
+        }
+      }
+      .title {
+        background-color: $slightly-darker-then-background;
+        border: solid 1px $light-light-blue;
+        border-radius: 5px;
 
-            .overview,.genres,.directors{
-                background-color: $slightly-darker-then-background;
-                border: solid 1px $light-light-blue;
-                border-radius: 5px;
-            }
+        &::-webkit-scrollbar {
+          width: 5px;
+          background-color: $light-light-blue;
         }
 
-        .pagination-list {
-            .navlink-container {
-                .pagination-link {
-                    border-radius: 50%;
-                    background-color: $slightly-darker-then-background;
-                }
-
-                .active-pagination {
-                    //background-color: red
-                    box-shadow: inset 1px 1px 10px #f3faf7;
-                }
-
-                .inactive-pagination {
-                    //background-color: green
-                }
-            }
+        &::-webkit-scrollbar-thumb {
+          background-color: $dark-blue;
+          border-radius: 5px;
+          box-shadow: none;
         }
-
+      }
     }
+    .movie-description {
+      .overview,
+      .genres,
+      .directors {
+        background-color: $slightly-darker-then-background;
+        border: solid 1px $light-light-blue;
+        border-radius: 5px;
+      }
+    }
+
+    .pagination-list {
+      .navlink-container {
+        .pagination-link {
+          border-radius: 50%;
+          background-color: $slightly-darker-then-background;
+        }
+
+        .active-pagination {
+          //background-color: red
+          box-shadow: inset 1px 1px 10px #f3faf7;
+        }
+
+        .inactive-pagination {
+          //background-color: green
+        }
+      }
+    }
+  }
 }

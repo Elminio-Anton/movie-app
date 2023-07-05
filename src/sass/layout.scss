@@ -1,344 +1,397 @@
 .app-container {
-    height: 100vh;
-    display: grid;
-    grid-template-areas: "header header""aside main""footer footer";
-    grid-template-columns: 250px calc(100% - 250px);
-    grid-template-rows: 64px 1fr 64px;
-    width: calc(100vw - 16px);
-    //padding: 0 10px 0 10px;
-    margin: 0 auto;
+  height: 100vh;
+  display: grid;
+  grid-template-areas: "header header" "aside main" "footer footer";
+  grid-template-columns: 250px calc(100% - 250px);
+  grid-template-rows: 64px 1fr 64px;
+  width: calc(100vw - 16px);
+  //padding: 0 10px 0 10px;
+  margin: 0 auto;
 
-    .header {
-        grid-area: header;
-        display: flex;
+  .header {
+    grid-area: header;
+    display: flex;
 
-        .header-img {
-            display: block;
-            height: calc(100% - 20px);
-            margin: auto;
-            padding: 10px 0;
-        }
+    .header-img {
+      display: block;
+      height: calc(100% - 20px);
+      margin: auto;
+      padding: 10px 0;
+    }
+  }
+
+  .aside {
+    grid-area: aside;
+
+    .login-container {
+      width: min-content;
+      white-space: nowrap;
+      height: min-content;
+      display: grid;
     }
 
-    .aside {
-        grid-area: aside;
+    .search-by-imdb-container {
+      display: grid;
+      justify-items: center;
 
-        .login-container {
+      .id-input {
+        width: 67px;
+      }
+    }
+
+    .search-by-name-container {
+      .label {
+      }
+
+      .input {
+      }
+
+      .button {
+      }
+    }
+  }
+
+  .main {
+    grid-area: main;
+    width: 100%;
+
+    .popular-movies-container {
+      display: flex;
+      flex-wrap: nowrap;
+      width: 100%;
+      overflow-x: scroll;
+    }
+
+    .loader-container {
+      height: 100%;
+      display: flex;
+
+      .loader {
+        margin: auto;
+      }
+    }
+
+    .small-info {
+      display: inline-grid;
+      gap: 5px 0;
+      justify-items: center;
+      padding: 10px;
+      grid-template-rows: 225px 81px 65px 45px;
+      position: relative;
+
+      & > :nth-child(2),
+      > :nth-child(3),
+      > :nth-child(4) {
+        padding: 3px;
+      }
+
+      .poster {
+        width: 150px;
+      }
+
+      .heading {
+        justify-self: left;
+      }
+
+      .genres {
+        display: grid;
+        width: 100%;
+        height: 100%;
+
+        .genres-container {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-around;
+
+          .genre {
+            width: max-content;
+            white-space: nowrap;
+            padding-right: 2px;
+          }
+        }
+      }
+
+      .release-date {
+        width: 100%;
+        display: grid;
+        text-align: center;
+      }
+
+      .original-title-container {
+        display: grid;
+        width: 100%;
+        justify-items: center;
+
+        .original-title {
+          text-align: center;
+          overflow: auto;
+        }
+      }
+
+      .rating {
+        position: absolute;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: red;
+        top: 210px;
+        left: 120px;
+      }
+    }
+
+    .pagination-list {
+      list-style: none;
+      display: flex;
+      width: min-content;
+      padding: 5px 0;
+      margin: 0 auto;
+
+      .navlink-container {
+        width: min-content;
+        height: min-content;
+        padding: 0 1px;
+
+        .pagination-link {
+          display: block;
+          //width: 30px;
+          height: 20px;
+          text-align: center;
+          line-height: 20px;
+        }
+      }
+    }
+
+    .single-movie-page {
+      display: grid;
+      grid-template-areas: "poster similar" "poster recommended" "main main";
+      grid-template-columns: 235px calc(100% - 235px);
+      grid-template-rows: 225px 225px 200px;
+      .recommended-movies-container {
+        grid-area: recommended;
+      }
+      .similar-movies-container {
+        grid-area: similar;
+      }
+      .similar-movies-container,
+      .recommended-movies-container {
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        .h5 {
+          padding: 3px;
+        }
+        .scroll-wrapper {
+          width: 100%;
+          overflow: auto;
+          padding: 5px;
+          .similar-movies,
+          .recommended-movies {
+            width: max-content;
+            height: max-content;
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            overflow: auto;
+            .smallest {
+              margin: 0px 5px;
+              width: 250px;
+              height: 141px;
+              display: flex;
+              flex-direction: column;
+              overflow: auto;
+              position: relative;
+              .poster {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+              }
+              .title {
+                width: calc(100% - 6px);
+                padding: 3px;
+                //margin: auto;
+                z-index: 1;
+                text-align: center;
+                visibility: hidden;
+                opacity: 0;
+                transition: opacity linear 100ms;
+                margin: auto 3px;
+              }
+              &:hover > .title {
+                visibility: visible;
+                opacity: 0.9;
+              }
+            }
+          }
+        }
+      }
+
+      .short-info-container {
+        width: 100%;
+        height: 100%;
+        grid-area: poster;
+
+        .poster {
+          display: block;
+          width: calc(100% - 10px);
+          margin: 5px auto 0 auto;
+          border-radius: 5px;
+        }
+
+        .short-info {
+          height: calc(450px - 337.5px);
+          display: grid;
+          grid-template-rows: max-content 1fr;
+          grid-template-columns: 225px;
+          align-items: flex-end;
+          padding: 5px;
+          gap: 5px 0;
+          width: calc(100% - 10px);
+          position: relative;
+          .favourite-icon {
+            width: min-content;
+            height: min-content;
+            border-radius: 10px;
+            position: absolute;
+            top: -10px;
+            left: 10px;
+          }
+          .title {
+            display: block;
+            margin: 0 auto;
+            padding: 5px;
+            width: fit-content;
+            text-align: center;
+            overflow: auto;
+            max-height: 74px;
+            //white-space: nowrap;
+          }
+
+          .ratings-container {
+            display: flex;
+            //padding: 5px 5px;
+            justify-content: space-around;
+            width: 225px;
+
+            .imdbRating {
+              height: max-content;
+              border: 1px solid #666;
+              padding: 2px 2px 1px;
+              border-radius: 5px;
+              text-decoration: none;
+              display: inline-block;
+              width: 120px;
+
+              img {
+                border: none;
+                vertical-align: text-bottom;
+              }
+
+              a {
+                text-decoration: none;
+                color: -webkit-link;
+                cursor: pointer;
+              }
+
+              .rating {
+                display: inline-block;
+                padding-left: 5px;
+
+                .ofTen {
+                }
+              }
+
+              .star {
+                margin-left: 3px;
+                border: none;
+                vertical-align: text-bottom;
+              }
+            }
+
+            .tmdb-rating {
+              display: inline-flex;
+              justify-content: space-between;
+              align-items: center;
+              padding-right: 5px;
+              width: 95px;
+              height: 28px;
+
+              .logo {
+                padding: 1px 3px;
+              }
+
+              .rating {
+                width: min-content;
+              }
+
+              .ofTen {
+              }
+            }
+          }
+        }
+      }
+
+      .movie-description {
+        grid-area: main;
+        padding: 5px;
+        display: grid;
+        grid-template-rows: minmax(20px, 107px) repeat(2, max-content);
+        grid-template-columns: 100%;
+        gap: 5px 0;
+
+        .overview {
+          padding: 5px;
+          width: 100%;
+        }
+
+        .minor-info {
+          display: flex;
+          flex-wrap: wrap;
+          > * {
+            margin: 5px;
+          }
+
+          .genres {
+            display: block;
             width: min-content;
             white-space: nowrap;
-            height: min-content;
-            display: grid;
-        }
+            padding: 5px;
+          }
 
-        .search-by-imdb-container {
-            display: grid;
-            justify-items: center;
-
-            .id-input {
-                width: 67px;
-            }
-        }
-
-        .search-by-name-container {
-            .label {}
-
-            .input {}
-
-            .button {}
-        }
-
-
-    }
-
-    .main {
-        grid-area: main;
-        width: 100%;
-
-        .popular-movies-container {
-            display: flex;
-            flex-wrap: nowrap;
-            width: 100%;
-            overflow-x: scroll;
-        }
-
-        .loader-container {
-            height: 100%;
-            display: flex;
-
-            .loader {
-                margin: auto;
-            }
-
-        }
-
-
-        .small-info {
-            display: inline-grid;
-            gap: 5px 0;
-            justify-items: center;
-            padding: 10px;
-            grid-template-rows: 225px 81px 65px 45px;
-            position: relative;
-
-            &> :nth-child(2),
-            > :nth-child(3),
-            > :nth-child(4) {
-                padding: 3px;
-            }
-
-            .poster {
-                width: 150px;
-            }
-
-            .heading {
-                justify-self: left;
-            }
-
-            .genres {
-                display: grid;
-                width: 100%;
-                height: 100%;
-
-                .genres-container {
-                    display: flex;
-                    flex-wrap: wrap;
-                    justify-content: space-around;
-
-                    .genre {
-                        width: max-content;
-                        white-space: nowrap;
-                        padding-right: 2px;
-                    }
-                }
-            }
-
-            .release-date {
-                width: 100%;
-                display: grid;
-                text-align: center;
-            }
-
-            .original-title-container {
-                display: grid;
-                width: 100%;
-                justify-items: center;
-
-                .original-title {
-                    text-align: center;
-                    overflow: auto;
-                }
-            }
-
-            .rating {
-                position: absolute;
-                margin: 0 auto;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background-color: red;
-                top: 210px;
-                left: 120px;
-            }
-        }
-
-        .pagination-list {
-            list-style: none;
-            display: flex;
+          .directors {
+            display: block;
+            padding: 5px;
             width: min-content;
-            padding: 5px 0;
-            margin: 0 auto;
-
-            .navlink-container {
-                width: min-content;
-                height: min-content;
-                padding: 0 1px;
-
-                .pagination-link {
-                    display: block;
-                    //width: 30px;
-                    height: 20px;
-                    text-align: center;
-                    line-height: 20px;
-                }
-            }
+            white-space: nowrap;
+          }
         }
 
-        .single-movie-page {
-            display: grid;
-            grid-template-areas: 'poster similar''poster recommended''main main';
-            grid-template-columns: 235px calc(100% - 235px);
-            grid-template-rows: 225px 225px 200px;
-
-            .short-info-container {
-                width: 100%;
-                height: 100%;
-                grid-area: poster;
-
-
-                .poster {
-                    display: block;
-                    width: calc(100% - 10px);
-                    margin: 5px auto 0 auto;
-                    border-radius: 5px;
-                    
-                }
-
-                .short-info {
-                    height: calc(450px - 337.5px);
-                    display: grid;
-                    grid-template-rows: max-content 1fr;
-                    grid-template-columns: 225px;
-                    align-items: flex-end;
-                    padding: 5px;
-                    gap: 5px 0;
-                    width: calc(100% - 10px);
-                    position: relative;
-                    .favourite-icon {
-                        width: min-content;
-                        height: min-content;
-                        border-radius: 10px;
-                        position: absolute;
-                        top: -10px;
-                        left: 10px;
-                    }
-                    .title {
-                        display: block;
-                        margin: 0 auto;
-                        padding: 5px;
-                        width: fit-content;
-                        text-align: center;
-                        overflow: auto;
-                        max-height: 74px;
-                        //white-space: nowrap;
-                    }
-
-                    .ratings-container {
-                        display: flex;
-                        //padding: 5px 5px;
-                        justify-content: space-around;
-                        width: 225px;
-
-                        .imdbRating {
-                            height: max-content;
-                            border: 1px solid #666;
-                            padding: 2px 2px 1px;
-                            border-radius: 5px;
-                            text-decoration: none;
-                            display: inline-block;
-                            width: 120px;
-
-                            img {
-                                border: none;
-                                vertical-align: text-bottom;
-                            }
-
-                            a {
-                                text-decoration: none;
-                                color: -webkit-link;
-                                cursor: pointer;
-                            }
-
-                            .rating {
-                                display: inline-block;
-                                padding-left: 5px;
-
-                                .ofTen {}
-                            }
-
-                            .star {
-                                margin-left: 3px;
-                                border: none;
-                                vertical-align: text-bottom;
-                            }
-                        }
-
-                        .tmdb-rating {
-                            display: inline-flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            padding-right: 5px;
-                            width: 95px;
-                            height: 28px;
-
-                            .logo {
-                                padding: 1px 3px;
-                            }
-
-                            .rating {
-                                width: min-content;
-
-                            }
-
-                            .ofTen {}
-                        }
-                    }
-                }
-
-            }
-
-            .movie-description {
-                grid-area: main;
-                padding: 5px;
-                display: grid;
-                grid-template-rows: minmax(20px, 107px) repeat(2, max-content);
-                grid-template-columns: 100%;
-                gap: 5px 0;
-
-                .overview {
-                    padding: 5px;
-                    width: 100%;
-                }
-
-                .minor-info {
-                    display: flex;
-                    flex-wrap: wrap;
-                    >* {
-                        margin: 5px;
-                    }
-
-                    .genres {
-                        display: block;
-                        width: min-content;
-                        white-space: nowrap;
-                        padding: 5px;
-                    }
-
-                    .directors {
-                        display: block;
-                        padding: 5px;
-                        width: min-content;
-                        white-space: nowrap;
-                    }
-
-                }
-
-
-
-                .votes {}
-
-
-
-                .favourite {}
-
-                .non-favourite {}
-
-            }
-
-            .similar-movies {
-                grid-area: similar;
-            }
-
-            .recommended-movies {
-                grid-area: recommended;
-            }
+        .votes {
         }
 
-    }
+        .favourite {
+        }
 
-    .footer {
-        grid-area: footer;
+        .non-favourite {
+        }
+      }
+
+      .similar-movies {
+        grid-area: similar;
+      }
+
+      .recommended-movies {
+        grid-area: recommended;
+      }
     }
+  }
+
+  .footer {
+    grid-area: footer;
+  }
 }

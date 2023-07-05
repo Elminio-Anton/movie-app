@@ -5,132 +5,154 @@ $light-light-blue: #64cde9;
 
 .login-button,
 .logout-button {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .login-text {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .app-container {
-    .aside {
-        .imdb-search-label {
-            text-decoration: dotted underline 0.5px;
-        }
+  .aside {
+    .imdb-search-label {
+      text-decoration: dotted underline 0.5px;
     }
+  }
 }
 
 .main {
-    .small-info {
-        * {
-            color: $dark-blue;
-        }
-
-        .heading {
-            color: $light-light-blue;
-        }
-
-        .rating {
-            font-weight: 900;
-        }
-
-        .genres {
-            .genres-container {
-                .hidden-genres {
-                    text-decoration: dotted underline 0.5px;
-                    cursor: default;
-                }
-
-                .genre {}
-            }
-        }
-
-        .release-date {}
-
-        .original-title-container {
-            .original-title {
-                font-weight: 900;
-            }
-        }
-
-
-        .tmdb-rating {
-            .red {
-                color: rgb(255, 0, 0);
-            }
-
-            .light-green {
-                color: rgb(0, 100, 0);
-            }
-
-            .green {
-                color: rgb(0, 128, 0);
-            }
-
-            .dark-green {
-                color: rgb(0, 100, 0);
-            }
-        }
+  .small-info {
+    * {
+      color: $dark-blue;
     }
-    .short-info{
-        .imdbRating {
-            background-color: #fff;
-            border: 1px solid #666;
-            font-size: 18px;
+
+    .heading {
+      color: $light-light-blue;
+    }
+
+    .rating {
+      font-weight: 900;
+    }
+
+    .genres {
+      .genres-container {
+        .hidden-genres {
+          text-decoration: dotted underline 0.5px;
+          cursor: default;
+        }
+
+        .genre {
+        }
+      }
+    }
+
+    .release-date {
+    }
+
+    .original-title-container {
+      .original-title {
+        font-weight: 900;
+      }
+    }
+
+    .tmdb-rating {
+      .red {
+        color: rgb(255, 0, 0);
+      }
+
+      .light-green {
+        color: rgb(0, 100, 0);
+      }
+
+      .green {
+        color: rgb(0, 128, 0);
+      }
+
+      .dark-green {
+        color: rgb(0, 100, 0);
+      }
+    }
+  }
+  .single-movie-page {
+    .similar-movies-container,
+    .recommended-movies-container {
+      .h5 {
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 20px;
+        color: $dark-blue;
+      }
+      .similar-movies,
+      .recommended-movies {
+        .smallest {
+          .poster {
+          }
+          .title {
+            color: $dark-blue;
+          }
+        }
+      }
+    }
+  }
+  .short-info-container {
+    .short-info {
+      .imdbRating {
+        background-color: #fff;
+        border: 1px solid #666;
+        font-size: 18px;
+        font-family: Arial, Helvetica, sans-serif;
+        font-weight: bold;
+        img {
+        }
+        a {
+        }
+        .rating {
+          font-family: Arial, Helvetica, sans-serif;
+          font-weight: bold;
+          .ofTen {
+            color: #666;
+            font-size: 9px;
             font-family: Arial, Helvetica, sans-serif;
             font-weight: bold;
-            img {
-            }
-            a {
-            }
-            .rating {
-                font-family: Arial, Helvetica, sans-serif;
-                font-weight: bold;
-                .ofTen {
-                    color: #666;
-                    font-size: 9px;
-                    font-family: Arial, Helvetica, sans-serif;
-                    font-weight: bold;
-                }
-            }
-            .star {
-
-            }
+          }
         }
-        .tmdb-rating{
-            .logo{
-                display: inline-block;
-                font-weight: 600;
-                background: linear-gradient(to right, #c0fecf 0%, #1ed5a9 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-            }
-            .rating{
-                font-family: Arial, Helvetica, sans-serif;
-                font-weight: bold;
-                color: $light-light-blue;
-            }
-            .ofTen{
-                color: $light-light-blue;
-                font-size: 9px;
-                font-family: Arial, Helvetica, sans-serif;
-                font-weight: bold;
-            }
+        .star {
         }
+      }
+      .tmdb-rating {
+        .logo {
+          display: inline-block;
+          font-weight: 600;
+          background: linear-gradient(to right, #c0fecf 0%, #1ed5a9 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .rating {
+          font-family: Arial, Helvetica, sans-serif;
+          font-weight: bold;
+          color: $light-light-blue;
+        }
+        .ofTen {
+          color: $light-light-blue;
+          font-size: 9px;
+          font-family: Arial, Helvetica, sans-serif;
+          font-weight: bold;
+        }
+      }
     }
-    .movie-description{
-
+  }
+  .movie-description {
+  }
+  .pagination-list {
+    .dots {
+      color: $dark-blue;
     }
-    .pagination-list {
-        .dots{
-            color: $dark-blue;
-        }
-        .navlink-container {
-            .pagination-link {
-                text-decoration: none;
-                font-weight: 600;
-                color: $dark-blue;
-            }
-        }
+    .navlink-container {
+      .pagination-link {
+        text-decoration: none;
+        font-weight: 600;
+        color: $dark-blue;
+      }
     }
+  }
 }

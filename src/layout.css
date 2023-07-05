@@ -109,6 +109,71 @@
       grid-template-areas: "poster similar" "poster recommended" "main main";
       grid-template-columns: 235px calc(100% - 235px);
       grid-template-rows: 225px 225px 200px; }
+      .app-container .main .single-movie-page .recommended-movies-container {
+        grid-area: recommended; }
+      .app-container .main .single-movie-page .similar-movies-container {
+        grid-area: similar; }
+      .app-container .main .single-movie-page .similar-movies-container,
+      .app-container .main .single-movie-page .recommended-movies-container {
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around; }
+        .app-container .main .single-movie-page .similar-movies-container .h5,
+        .app-container .main .single-movie-page .recommended-movies-container .h5 {
+          padding: 3px; }
+        .app-container .main .single-movie-page .similar-movies-container .scroll-wrapper,
+        .app-container .main .single-movie-page .recommended-movies-container .scroll-wrapper {
+          width: 100%;
+          overflow: auto;
+          padding: 5px; }
+          .app-container .main .single-movie-page .similar-movies-container .scroll-wrapper .similar-movies,
+          .app-container .main .single-movie-page .similar-movies-container .scroll-wrapper .recommended-movies,
+          .app-container .main .single-movie-page .recommended-movies-container .scroll-wrapper .similar-movies,
+          .app-container .main .single-movie-page .recommended-movies-container .scroll-wrapper .recommended-movies {
+            width: max-content;
+            height: max-content;
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            overflow: auto; }
+            .app-container .main .single-movie-page .similar-movies-container .scroll-wrapper .similar-movies .smallest,
+            .app-container .main .single-movie-page .similar-movies-container .scroll-wrapper .recommended-movies .smallest,
+            .app-container .main .single-movie-page .recommended-movies-container .scroll-wrapper .similar-movies .smallest,
+            .app-container .main .single-movie-page .recommended-movies-container .scroll-wrapper .recommended-movies .smallest {
+              margin: 0px 5px;
+              width: 250px;
+              height: 141px;
+              display: flex;
+              flex-direction: column;
+              overflow: auto;
+              position: relative; }
+              .app-container .main .single-movie-page .similar-movies-container .scroll-wrapper .similar-movies .smallest .poster,
+              .app-container .main .single-movie-page .similar-movies-container .scroll-wrapper .recommended-movies .smallest .poster,
+              .app-container .main .single-movie-page .recommended-movies-container .scroll-wrapper .similar-movies .smallest .poster,
+              .app-container .main .single-movie-page .recommended-movies-container .scroll-wrapper .recommended-movies .smallest .poster {
+                position: absolute;
+                top: 0px;
+                left: 0px; }
+              .app-container .main .single-movie-page .similar-movies-container .scroll-wrapper .similar-movies .smallest .title,
+              .app-container .main .single-movie-page .similar-movies-container .scroll-wrapper .recommended-movies .smallest .title,
+              .app-container .main .single-movie-page .recommended-movies-container .scroll-wrapper .similar-movies .smallest .title,
+              .app-container .main .single-movie-page .recommended-movies-container .scroll-wrapper .recommended-movies .smallest .title {
+                width: calc(100% - 6px);
+                padding: 3px;
+                z-index: 1;
+                text-align: center;
+                visibility: hidden;
+                opacity: 0;
+                transition: opacity linear 100ms;
+                margin: auto 3px; }
+              .app-container .main .single-movie-page .similar-movies-container .scroll-wrapper .similar-movies .smallest:hover > .title,
+              .app-container .main .single-movie-page .similar-movies-container .scroll-wrapper .recommended-movies .smallest:hover > .title,
+              .app-container .main .single-movie-page .recommended-movies-container .scroll-wrapper .similar-movies .smallest:hover > .title,
+              .app-container .main .single-movie-page .recommended-movies-container .scroll-wrapper .recommended-movies .smallest:hover > .title {
+                visibility: visible;
+                opacity: 0.9; }
       .app-container .main .single-movie-page .short-info-container {
         width: 100%;
         height: 100%;

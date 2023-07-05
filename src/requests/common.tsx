@@ -181,6 +181,28 @@ const getMovieDetailsByTmdbId = (movie_id: string) => {
   });
 };
 
+const getRecommended = (movie_id: string | number,page:number=1) => {
+  return fetchData({
+    url: `https://api.themoviedb.org/3/movie/${movie_id}/recommendations?language=en-US&page=${page}`,
+    headers: {
+      Authorization: `Bearer ${tokenv4}`,
+      accept: `application/json`
+    },
+    method: "GET",
+    body: undefined,
+  });
+};
+const getSimilar = (movie_id: string | number,page:number=1) => {
+  return fetchData({
+    url: `https://api.themoviedb.org/3/movie/${movie_id}/similar?language=en-US&page=${page}`,
+    headers: {
+      Authorization: `Bearer ${tokenv4}`,
+      accept: `application/json`
+    },
+    method: "GET",
+    body: undefined,
+  });
+};
 
 export {
   getIMDBRating,
@@ -196,6 +218,8 @@ export {
   getAccountDetails,
   getGenres,
   getMovieDetailsByTmdbId,
+  getRecommended,
+  getSimilar,
 };
 
 /* console.log('!!!!!!!!!!');

@@ -27,6 +27,8 @@ import {
   getGenres,
   fetchData,
   getMovieDetailsByTmdbId,
+  getRecommended,
+  getSimilar,
 } from "../src/requests/common";
 import {
   Link,
@@ -89,6 +91,7 @@ type MovieInfo = {
   vote_average: number;
   vote_count: number;
   release_date: string;
+  title?: string;
 };
 const request_token = (() => {
   const local = window.localStorage;
@@ -303,7 +306,6 @@ function SearchIMDBResult() {
   let [movieDetails, setMovieDetails]: [MovieInfo | undefined, any] =
     useState();
   let [fullId, setFullId] = useState("");
-  let SingeMoviePageMemo = React.memo(SingeMoviePage);
   useEffect(() => {
     getMovieDetailsByImdbId(String(params.imdbId)).then((movieData) => {
       //console.log('movieData', movieData)
@@ -345,7 +347,7 @@ function SearchIMDBResult() {
   }, [params.imdbId]);
 
   if (ready && params.imdbId && params.imdbId.length >= 7 && movieDetails)
-    return <SingeMoviePageMemo {...movieDetails} />;
+    return <SingleMoviePage {...movieDetails} />;
   else
     return (
       <div className="loader-container">
@@ -915,9 +917,37 @@ const NotInUseIMDBPlugin = ({
   );
   /////IMDB rating plugin
 };
-const SingeMoviePage = (movieDetails: MovieInfo) => {
-  console.dir(movieDetails)
+const SingleMoviePage = (movieDetails: MovieInfo) => {
+  console.dir(movieDetails);
+  let [recommendedMovies, setRecommendedMovies]: [MovieInfo[], any] = useState(
+    []
+  );
+  let [similarMovies, setSimilarMovies]: [MovieInfo[], any] = useState([]);
+  let [loading, setLoading]: [boolean, any] = useState(true);
+  useLayoutEffect(() => {
+    Promise.all([
+      getRecommended(movieDetails.id, 1),
+      getSimilar(movieDetails.id, 1),
+    ]).then((responses) => {
+      setRecommendedMovies(responses[0].results);
+      setSimilarMovies(responses[1].results);
+      setLoading(false);
+    });
+  }, []);
+  if (loading)
   return (
+    <div className="loader-container">
+      <ReactLoading
+        type="spinningBubbles"
+        color={loadingColor}
+        className="loader"
+        height={200}
+        width={200}
+        delay={0}
+      />
+    </div>
+  )
+  else return (
     <div className="single-movie-page">
       <div className="short-info-container">
         <img
@@ -934,7 +964,9 @@ const SingeMoviePage = (movieDetails: MovieInfo) => {
               title={movieDetails.original_title}
               imdbId={movieDetails.imdbId}
             />
-            <TMDBRating rating={Math.trunc(movieDetails.vote_average*10)/10} />
+            <TMDBRating
+              rating={Math.trunc(movieDetails.vote_average * 10) / 10}
+            />
           </div>
           <FavouriteIcon id={movieDetails.id} />
         </div>
@@ -959,11 +991,25 @@ const SingeMoviePage = (movieDetails: MovieInfo) => {
           )}
         </div>
       </div>
-      <div className="similar-movies">
-        <SmallestTMDBObjectInfo />
+      <div className="similar-movies-container">
+        <h5 className="h5">Similar movies</h5>
+        <div className="scroll-wrapper">
+          <div className="similar-movies">
+            {similarMovies.map((movieInfo: MovieInfo, i) => (
+              <SmallestTMDBObjectInfo movieInfo={movieInfo} key={i} />
+            ))}
+          </div>
+        </div>
       </div>
-      <div className="recommended-movies">
-        <SmallestTMDBObjectInfo />
+      <div className="recommended-movies-container">
+        <h5 className="h5">Recommended movies</h5>
+        <div className="scroll-wrapper">
+          <div className="recommended-movies">
+            {recommendedMovies.map((movieInfo: MovieInfo, i) => (
+              <SmallestTMDBObjectInfo movieInfo={movieInfo} key={i} />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -973,44 +1019,56 @@ const MoviePageById = () => {
   const [movieDetails, setMovieDetails]: [MovieInfo | undefined, any] =
     useState();
 
-  let SingeMoviePageMemo = React.memo(SingeMoviePage);
-  useEffect(()=>{
+  useEffect(() => {
     getMovieDetailsByTmdbId(id).then((movieData) => {
       //console.log('movieData', movieData)
       if (movieData.length === 0) setMovieDetails(undefined);
       else {
-        Promise.all([
-          getDirectors(id),
-          getIMDBRating(movieData.imdb_id),
-        ]).then(([directors,imdb_rating]) => {
-          setMovieDetails(
-            Object.assign(
-              movieData,
-              //prettier-ignore
-              directors.length
+        Promise.all([getDirectors(id), getIMDBRating(movieData.imdb_id)]).then(
+          ([directors, imdb_rating]) => {
+            setMovieDetails(
+              Object.assign(
+                movieData,
+                //prettier-ignore
+                directors.length
                 ? { directors: directors.map(({ name }: { name: string }) => name ),}
                 : {},
-              { imdbId: movieData.imdb_id, imdbRating: imdb_rating},
-              { genre_ids: movieData.genres.map((genre:{id:string})=>genre.id)}
-            )
-          );
-        });
+                { imdbId: movieData.imdb_id, imdbRating: imdb_rating },
+                {
+                  genre_ids: movieData.genres.map(
+                    (genre: { id: string }) => genre.id
+                  ),
+                }
+              )
+            );
+          }
+        );
       }
     });
-  },[])
-/*   getMovieDetailsByTmdbId(id).then((fetchedMovieDetails) => {
+  }, []);
+  /*   getMovieDetailsByTmdbId(id).then((fetchedMovieDetails) => {
     setMovieDetails(fetchedMovieDetails);
   }); */
-  //return <SingeMoviePageMemo {...movieDetails} />;
-  if(movieDetails)
-    return (<SingeMoviePageMemo {...movieDetails} />);
-  else
-    return <></>
+  //return <SingleMoviePageMemo {...movieDetails} />;
+  if (movieDetails) return <SingleMoviePage {...movieDetails} />;
+  else return <></>;
 };
 
-const SmallestTMDBObjectInfo = () => {
-  return <></>;
+const SmallestTMDBObjectInfo = ({ movieInfo }: { movieInfo: MovieInfo }) => {
+  return (
+    <a className="smallest" href={`${homePage}/movie/${movieInfo.id}`}>
+      <img
+        className="poster"
+        src={`https://www.themoviedb.org/t/p/w250_and_h141_face/${movieInfo.poster_path}`}
+        alt={movieInfo.original_title}
+      />
+      <span className="title">
+        {movieInfo.title || movieInfo.original_title}
+      </span>
+    </a>
+  );
 };
+
 function App() {
   return (
     <Fragment>
@@ -1034,7 +1092,9 @@ function App() {
     </Fragment>
   );
 }
-
-
+/* console.log('!!!!!!!!!!');
+getRecommended("385687", 1).then((data) => console.dir(data.results.map((movie:MovieInfo)=>movie.title+'__'+movie.original_title)));
+console.log('!!!!!!!!!!'); */
+//385687
 export { MoviePageById, SearchResults, Trending, SearchIMDBResult };
 export default App;

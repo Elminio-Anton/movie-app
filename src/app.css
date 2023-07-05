@@ -14,7 +14,7 @@
     .app-container .favourite-icon.favourite svg {
       fill: yellow; }
   .app-container .favourite-icon.non-favourite {
-    background: radial-gradient(#01A0D0 0%, #01A0D0 25%, #0d253f 100%); }
+    background: radial-gradient(#01a0d0 0%, #01a0d0 25%, #0d253f 100%); }
     .app-container .favourite-icon.non-favourite svg {
       fill: #0d253f; }
 
@@ -32,6 +32,25 @@
         } */ }
   .app-container .main .active-drag-scroll {
     cursor: grabbing; }
+  .app-container .main .single-movie-page .similar-movies-container .h5,
+  .app-container .main .single-movie-page .recommended-movies-container .h5 {
+    background-color: #01a0d0;
+    user-select: none;
+    border-radius: 3px; }
+  .app-container .main .single-movie-page .similar-movies-container .similar-movies .smallest,
+  .app-container .main .single-movie-page .similar-movies-container .recommended-movies .smallest,
+  .app-container .main .single-movie-page .recommended-movies-container .similar-movies .smallest,
+  .app-container .main .single-movie-page .recommended-movies-container .recommended-movies .smallest {
+    border-radius: 10px;
+    cursor: pointer;
+    text-decoration: none; }
+    .app-container .main .single-movie-page .similar-movies-container .similar-movies .smallest .title,
+    .app-container .main .single-movie-page .similar-movies-container .recommended-movies .smallest .title,
+    .app-container .main .single-movie-page .recommended-movies-container .similar-movies .smallest .title,
+    .app-container .main .single-movie-page .recommended-movies-container .recommended-movies .smallest .title {
+      user-select: none;
+      background-color: #64cde9;
+      border-radius: 10px; }
   .app-container .main .small-info .poster {
     border-radius: 10px; }
   .app-container .main .small-info > :nth-child(2),
@@ -39,7 +58,7 @@
   .app-container .main .small-info > :nth-child(4) {
     border: solid #64cde9 1px;
     border-radius: 5px;
-    background-color: #01A0D0; }
+    background-color: #01a0d0; }
   .app-container .main .small-info .original-title-container .original-title::-webkit-scrollbar {
     width: 5px;
     background-color: #64cde9; }
@@ -63,11 +82,11 @@
     background: linear-gradient(210deg, #64cde9 40%, rgba(0, 0, 0, 0) 41%), linear-gradient(330deg, #64cde9 40%, rgba(0, 0, 0, 0) 41%), linear-gradient(90deg, #64cde9 30%, rgba(0, 0, 0, 0) 31%);
     background-color: #0d253f; }
   .app-container .main .short-info .tmdb-rating {
-    background-color: #01A0D0;
+    background-color: #01a0d0;
     border: solid 1px #64cde9;
     border-radius: 5px; }
   .app-container .main .short-info .title {
-    background-color: #01A0D0;
+    background-color: #01a0d0;
     border: solid 1px #64cde9;
     border-radius: 5px; }
     .app-container .main .short-info .title::-webkit-scrollbar {
@@ -77,12 +96,14 @@
       background-color: #0d253f;
       border-radius: 5px;
       box-shadow: none; }
-  .app-container .main .movie-description .overview, .app-container .main .movie-description .genres, .app-container .main .movie-description .directors {
-    background-color: #01A0D0;
+  .app-container .main .movie-description .overview,
+  .app-container .main .movie-description .genres,
+  .app-container .main .movie-description .directors {
+    background-color: #01a0d0;
     border: solid 1px #64cde9;
     border-radius: 5px; }
   .app-container .main .pagination-list .navlink-container .pagination-link {
     border-radius: 50%;
-    background-color: #01A0D0; }
+    background-color: #01a0d0; }
   .app-container .main .pagination-list .navlink-container .active-pagination {
     box-shadow: inset 1px 1px 10px #f3faf7; }
