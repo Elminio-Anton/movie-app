@@ -2,6 +2,8 @@ $dark-blue: #0d253f;
 $light-blue: #01b4e4;
 $light-green: #90cea1;
 $light-light-blue: #64cde9;
+$slightly-darker-then-background: #01a0d0;
+$mid-blue: #5566cd;
 
 .login-button,
 .logout-button {
@@ -14,8 +16,18 @@ $light-light-blue: #64cde9;
 
 .app-container {
   .aside {
+    .login-text{
+      color: $mid-blue;
+    }
+    .button{
+      color: $light-blue;
+      letter-spacing: 0.1em;
+    }
     .imdb-search-label {
       text-decoration: dotted underline 0.5px;
+    }
+    .search-by-name-container{
+      .label{}
     }
   }
 }

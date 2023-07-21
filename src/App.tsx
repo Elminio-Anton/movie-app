@@ -10,6 +10,7 @@ import React, {
   useLayoutEffect,
   RefObject,
 } from "react";
+import noImage from "./img/no-image-icon.png"
 import "./app.css";
 import "./fonts.css";
 import "./layout.css";
@@ -29,6 +30,7 @@ import {
   getMovieDetailsByTmdbId,
   getRecommended,
   getSimilar,
+  getTVDetailsByTmdbId,
 } from "../src/requests/common";
 import {
   Link,
@@ -92,6 +94,7 @@ type MovieInfo = {
   vote_count: number;
   release_date: string;
   title?: string;
+  media_type:string;
 };
 const request_token = (() => {
   const local = window.localStorage;
@@ -125,7 +128,7 @@ let genres = (() => {
   let innerGenres: { id: number; name: string };
   return {
     set: (genres: { id: number; name: string }) => {
-      innerGenres = genres;
+      innerGenres = {...genres,};
     },
     getByIds: (genre_ids: number[]) =>
       Object.entries(innerGenres)
@@ -159,14 +162,18 @@ const localFavourites = (() => {
     },
   };
 })();
-getGenres().then((genresArr) => {
+getGenres().then(([tvGenres,movieGenres]) => {
   //console.log('GENRES!!!!!', genres);
   genres.set(
-    genresArr.genres.reduce(
+    {...tvGenres.genres.reduce(
       (newGenresObject: Object, genre: { id: number; name: string }) =>
         Object.assign(newGenresObject, { [genre.id]: genre.name }),
       {}
-    )
+    ),...movieGenres.genres.reduce(
+      (newGenresObject: Object, genre: { id: number; name: string }) =>
+        Object.assign(newGenresObject, { [genre.id]: genre.name }),
+      {}
+    )}
   );
   //console.log('GENRES!!!!!', genres);
 });
@@ -233,13 +240,13 @@ function LoginLogout() {
   return sessionId.get() !== "null" ? (
     <div className="login-container">
       <span className="login-text">You are logged in as {accountName}</span>
-      <button onClick={logOut} className="logout-button">
+      <button onClick={logOut} className="logout-button button">
         Log out
       </button>
     </div>
   ) : (
     <div className="login-container">
-      <button onClick={redirectToLogin} className="login-button">
+      <button onClick={redirectToLogin} className="login-button button">
         Log in
       </button>
     </div>
@@ -286,7 +293,7 @@ function FindByIMDBId() {
           className="imdb-search-label">
           Enter IMDB ID for movie:
         </label>
-        <input
+        <input 
           id="searchImdb"
           ref={inputId}
           value={params.imdbId}
@@ -312,7 +319,7 @@ function SearchIMDBResult() {
       if (movieData.movie_results.length === 0) setMovieDetails(undefined);
       else {
         Promise.all([
-          getDirectors(movieData.movie_results[0].id),
+          getDirectors(movieData.movie_results[0].id,movieData.media_type || 'movie'),
           getIMDBRating(String(params.imdbId)),
         ]).then((result) => {
           setMovieDetails(
@@ -322,7 +329,8 @@ function SearchIMDBResult() {
               result[0]
                 ? { directors: result[0].map(({ name }: { name: string }) => name ),}
                 : {},
-              { imdbId: params.imdbId, imdbRating: result[1] }
+              { imdbId: params.imdbId, imdbRating: result[1] },
+              {}
             )
           );
           setReady(true);
@@ -454,7 +462,7 @@ function Trending() {
     useState();
   let [activeDragScroll, setactiveDragScroll]: [true | false, any] =
     useState(false);
-  let trendingRef = useRef<HTMLDivElement>(null);
+  let trendingRef = useRef<HTMLDivElement | null>(null);
   let mouseMoveHandler: MouseEventHandler = (event) => {
     if (activeDragScroll) {
       event.preventDefault();
@@ -485,11 +493,14 @@ function Trending() {
     ).then((response) => {
       //console.log('getTrending!!!!!');
       if (response) {
-        setTrendingMovies(response);
+        setTrendingMovies({...response,total_pages:response.total_pages<=500?response.total_pages:500});
         setLoading(false);
       }
     });
   }, [searchParams, params]);
+/*   console.log('!!!!!!!!!!');
+  console.dir(trendingMovies?.results.filter(obj=>obj.media_type!=='movie'));
+  console.log('!!!!!!!!!!'); */
   return loading ? (
     <div className="loader-container">
       <ReactLoading
@@ -514,13 +525,14 @@ function Trending() {
         {trendingMovies &&
           trendingMovies.results.map((movie) => (
             <SmallTMDBObjectInfo
-              posterPath={movie.poster_path || "no poster path"}
+              posterPath={movie.poster_path}
               originalTitle={movie.original_title || movie.original_name}
               key={movie.id}
               genre_ids={movie.genre_ids}
-              tmdbRating={Math.round(movie.vote_average * 10) / 10}
+              tmdbRating={Math.round(movie.vote_average * 10) / 10 || 0}
               releaseDate={new Date(movie.release_date || movie.first_air_date)}
               movieId={movie.id}
+              media_type={movie.media_type}
             />
           ))}
       </div>
@@ -595,7 +607,7 @@ const FilterTrending = () => {
   }, []);
   return (
     <div className="trending-search">
-      <select
+      <select className="select-type"
         name=""
         id="trending-type"
         ref={typeSelect}
@@ -607,9 +619,8 @@ const FilterTrending = () => {
         <option value="movie">movie</option>
         <option value="all">all</option>
         <option value="tv">tv</option>
-        <option value="person">person</option>
       </select>
-      <select
+      <select className="select-period"
         name=""
         id="trending-period"
         ref={periodSelect}
@@ -621,7 +632,7 @@ const FilterTrending = () => {
         <option value="day">day</option>
         <option value="week">week</option>
       </select>
-      <button
+      <button className="button"
         onClick={() =>
           navigate(
             `${homePage}/trending?type=${
@@ -629,7 +640,7 @@ const FilterTrending = () => {
             }&period=${periodSelect.current && periodSelect.current.value}`
           )
         }>
-        trending
+        Trending
       </button>
     </div>
   );
@@ -643,8 +654,9 @@ const SmallTMDBObjectInfo = ({
   movieId,
   width = 170,
   height = 466,
+  media_type,
 }: {
-  posterPath: string;
+  posterPath: string | null;
   originalTitle: string;
   genre_ids: number[];
   tmdbRating: number;
@@ -652,6 +664,7 @@ const SmallTMDBObjectInfo = ({
   movieId: number;
   width?: number;
   height?: number;
+  media_type:string;
 }) => {
   let ratingColor =
     tmdbRating === 0
@@ -670,6 +683,8 @@ const SmallTMDBObjectInfo = ({
     height: `${height}px`,
   };
   const optimizedGenres = (genre_ids: number[]) => {
+    if(!genre_ids)
+      return null
     if (
       genres
         .getByIds(genre_ids)
@@ -711,12 +726,15 @@ const SmallTMDBObjectInfo = ({
       );
     }
   };
+  console.log('!!!!!!!!!!');
+  console.log(media_type);
+  console.log('!!!!!!!!!!');
   return (
     <div className="small-info" style={smallInfoStyle}>
-      <a href={`${homePage}/movie/${movieId}`}>
+      <a className="poster-container" href={`${homePage}/${media_type || "movie"}/${movieId}`}>
         <img
           className="poster"
-          src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${posterPath}`}
+          src={posterPath?`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${posterPath}`:noImage}
           alt="poster"
           dataset-movieid={movieId}></img>
       </a>
@@ -727,7 +745,7 @@ const SmallTMDBObjectInfo = ({
       <div className="genres">
         <span className="heading">Genres:</span>
         <div className="genres-container">
-          {optimizedGenres(genre_ids)}
+          {optimizedGenres(genre_ids)??"no genres"}
           {/* {genres.getByIds(genre_ids).map((genre, i) => <div className='genre' key={i}>{genre}</div>)} */}
         </div>
       </div>
@@ -776,7 +794,7 @@ const SearchByTitle = () => {
         type="text"
         id="search-by-name"
         ref={searchInput}
-        className="input"></input>
+        className="input-name"></input>
       <button className="button" onClick={goSearching}>
         Search!
       </button>
@@ -804,13 +822,14 @@ const SearchResults = () => {
         {searchResults &&
           searchResults.results.map((movie) => (
             <SmallTMDBObjectInfo
-              posterPath={movie.poster_path || "no poster path"}
+              posterPath={movie.poster_path}
               originalTitle={movie.original_title || movie.original_name}
               key={movie.id}
               genre_ids={movie.genres.map(({ id }) => id)}
               tmdbRating={movie.vote_average}
               releaseDate={new Date(movie.release_date || movie.first_air_date)}
               movieId={movie.id}
+              media_type={movie.media_type}
             />
           ))}
       </div>
@@ -823,7 +842,7 @@ const SearchResults = () => {
   );
 };
 const AsideFavourites = () => {
-  return <button>Show favourites</button>;
+  return <button className='show-favourites button'>Show favourites</button>;
 };
 const FavouriteIcon = ({ id }: { id: number }) => {
   let [isFavourite, setIsFavourite] = useState(localFavourites.check(id));
@@ -918,7 +937,7 @@ const NotInUseIMDBPlugin = ({
   /////IMDB rating plugin
 };
 const SingleMoviePage = (movieDetails: MovieInfo) => {
-  console.dir(movieDetails);
+  console.dir('SingleMoviePage',movieDetails);
   let [recommendedMovies, setRecommendedMovies]: [MovieInfo[], any] = useState(
     []
   );
@@ -926,8 +945,8 @@ const SingleMoviePage = (movieDetails: MovieInfo) => {
   let [loading, setLoading]: [boolean, any] = useState(true);
   useLayoutEffect(() => {
     Promise.all([
-      getRecommended(movieDetails.id, 1),
-      getSimilar(movieDetails.id, 1),
+      getRecommended(movieDetails.id, 1,movieDetails.media_type),
+      getSimilar(movieDetails.id, 1,movieDetails.media_type),
     ]).then((responses) => {
       setRecommendedMovies(responses[0].results);
       setSimilarMovies(responses[1].results);
@@ -952,9 +971,9 @@ const SingleMoviePage = (movieDetails: MovieInfo) => {
       <div className="short-info-container">
         <img
           className="poster"
-          src={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path}`}
+          src={movieDetails.poster_path?`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path}`:noImage}
           alt={movieDetails.original_title || "poster"}
-          srcSet={`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path} 1x, https://www.themoviedb.org/t/p/w600_and_h900_bestv2${movieDetails.poster_path} 2x`}
+          srcSet={movieDetails.poster_path?`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path} 1x, https://www.themoviedb.org/t/p/w600_and_h900_bestv2${movieDetails.poster_path} 2x`:noImage}
         />
         <div className="short-info">
           <p className="title">Title: {movieDetails.original_title}</p>
@@ -1016,15 +1035,16 @@ const SingleMoviePage = (movieDetails: MovieInfo) => {
 };
 const MoviePageById = () => {
   const id = String(useParams().id);
+  const movieOrTV = useLocation().pathname.includes('movie')?'movie':'tv'
+  const movieOrTVShouldBeFetched = movieOrTV==='tv'?getTVDetailsByTmdbId:getMovieDetailsByTmdbId
   const [movieDetails, setMovieDetails]: [MovieInfo | undefined, any] =
     useState();
-
   useEffect(() => {
-    getMovieDetailsByTmdbId(id).then((movieData) => {
-      //console.log('movieData', movieData)
+    movieOrTVShouldBeFetched(id).then((movieData) => {
+      console.log('movieData', movieData)
       if (movieData.length === 0) setMovieDetails(undefined);
       else {
-        Promise.all([getDirectors(id), getIMDBRating(movieData.imdb_id)]).then(
+        Promise.all([getDirectors(id,movieOrTV), getIMDBRating(movieData.imdb_id)]).then(
           ([directors, imdb_rating]) => {
             setMovieDetails(
               Object.assign(
@@ -1050,7 +1070,7 @@ const MoviePageById = () => {
     setMovieDetails(fetchedMovieDetails);
   }); */
   //return <SingleMoviePageMemo {...movieDetails} />;
-  if (movieDetails) return <SingleMoviePage {...movieDetails} />;
+  if (movieDetails) return <SingleMoviePage {...movieDetails} media_type={movieOrTV} />;
   else return <></>;
 };
 
@@ -1088,7 +1108,7 @@ function App() {
       <main className="main">
         <Outlet />
       </main>
-      <footer className="footer"></footer>
+     {/*  <footer className="footer"></footer> */}
     </Fragment>
   );
 }
@@ -1098,3 +1118,5 @@ console.log('!!!!!!!!!!'); */
 //385687
 export { MoviePageById, SearchResults, Trending, SearchIMDBResult };
 export default App;
+
+

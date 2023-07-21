@@ -20,7 +20,7 @@ const fetchData = async ({
   }
   const clearData = await fetch(url, fetchParams)
     .then((response) => {
-  /*     console.log(
+      /*     console.log(
         "fetchData",
         "fetchParams",
         fetchParams,
@@ -39,7 +39,7 @@ const fetchData = async ({
       if (response.ok) return response.json();
       else return undefined;
     })
-    .catch((err) => err);
+    .catch((err) => console.log("Error!!!" + err));
   //console.log("clearData", clearData);
   return clearData;
 };
@@ -96,12 +96,20 @@ const getMovieDetailsByImdbId = (movieId: string) => {
   });
 };
 const getGenres = () => {
-  return fetchData({
-    url: `https://api.themoviedb.org/3/genre/movie/list?api_key=${tokenv3}&language=en-US`,
-    headers: undefined,
-    method: "GET",
-    body: undefined,
-  });
+  return Promise.all([
+    fetchData({
+      url: `https://api.themoviedb.org/3/genre/tv/list?api_key=${tokenv3}&language=en-US`,
+      headers: undefined,
+      method: "GET",
+      body: undefined,
+    }),
+    fetchData({
+      url: `https://api.themoviedb.org/3/genre/movie/list?api_key=${tokenv3}&language=en-US`,
+      headers: undefined,
+      method: "GET",
+      body: undefined,
+    }),
+  ]);
 };
 const getTrending = (
   type: string | null = "movie",
@@ -144,9 +152,9 @@ const getSearchResults = (searchString: string, page: number | null = 1) => {
     })
   );
 };
-const getDirectors = (id: string) => {
+const getDirectors = (id: string,media_type:string) => {
   return fetch(
-    `https://api.themoviedb.org/3/movie/${id}/credits?api_key=4e122bba28bb00fb26ba8dd361c200fb`
+    `https://api.themoviedb.org/3/${media_type}/${id}/credits?api_key=4e122bba28bb00fb26ba8dd361c200fb`
   )
     .then((response) => response.json())
     .then(
@@ -163,7 +171,7 @@ const getIMDBRating = (id: string) =>
   fetch(`https://imdb-api.com/en/API/UserRatings/k_v4mu0b39/tt${id}`)
     .then((response) => response.json())
     .then((jsonData) => {
-/*       console.log("!!!!!!!!!!");
+      /*       console.log("!!!!!!!!!!");
       console.log(jsonData, id);
       console.log("!!!!!!!!!!"); */
       return jsonData.totalRating;
@@ -174,30 +182,41 @@ const getMovieDetailsByTmdbId = (movie_id: string) => {
     url: `https://api.themoviedb.org/3/movie/${movie_id}`,
     headers: {
       Authorization: `Bearer ${tokenv4}`,
-      accept: `application/json`
+      accept: `application/json`,
     },
     method: "GET",
     body: undefined,
   });
 };
 
-const getRecommended = (movie_id: string | number,page:number=1) => {
+const getRecommended = (movie_id: string | number, page: number = 1,media_type:string= "movie") => {
   return fetchData({
-    url: `https://api.themoviedb.org/3/movie/${movie_id}/recommendations?language=en-US&page=${page}`,
+    url: `https://api.themoviedb.org/3/${media_type}/${movie_id}/recommendations?language=en-US&page=${page}`,
     headers: {
       Authorization: `Bearer ${tokenv4}`,
-      accept: `application/json`
+      accept: `application/json`,
     },
     method: "GET",
     body: undefined,
   });
 };
-const getSimilar = (movie_id: string | number,page:number=1) => {
+const getSimilar = (movie_id: string | number, page: number = 1,media_type:string= "movie") => {
   return fetchData({
-    url: `https://api.themoviedb.org/3/movie/${movie_id}/similar?language=en-US&page=${page}`,
+    url: `https://api.themoviedb.org/3/${media_type}/${movie_id}/similar?language=en-US&page=${page}`,
     headers: {
       Authorization: `Bearer ${tokenv4}`,
-      accept: `application/json`
+      accept: `application/json`,
+    },
+    method: "GET",
+    body: undefined,
+  });
+};
+const getTVDetailsByTmdbId = (movie_id: string) => {
+  return fetchData({
+    url: `https://api.themoviedb.org/3/tv/${movie_id}`,
+    headers: {
+      Authorization: `Bearer ${tokenv4}`,
+      accept: `application/json`,
     },
     method: "GET",
     body: undefined,
@@ -220,8 +239,15 @@ export {
   getMovieDetailsByTmdbId,
   getRecommended,
   getSimilar,
+  getTVDetailsByTmdbId,
 };
 
 /* console.log('!!!!!!!!!!');
 getMovieDetailsByTmdbId('281234321').then(resp=>console.log(resp))
 console.log('!!!!!!!!!!'); */
+
+/* getSimilar('69295',1,'tv').then((response)=>{
+  console.log('!!!!!!!!!!');
+  console.log(response);
+  console.log('!!!!!!!!!!');
+}) */

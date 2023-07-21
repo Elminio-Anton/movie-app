@@ -1,11 +1,10 @@
 .app-container {
   height: 100vh;
   display: grid;
-  grid-template-areas: "header header" "aside main" "footer footer";
+  grid-template-areas: "header header" "aside main";
   grid-template-columns: 250px calc(100% - 250px);
-  grid-template-rows: 64px 1fr 64px;
-  width: calc(100vw - 16px);
-  margin: 0 auto; }
+  grid-template-rows: 64px 1fr;
+  width: calc(100vw - 16px); }
   .app-container .header {
     grid-area: header;
     display: flex; }
@@ -15,20 +14,39 @@
       margin: auto;
       padding: 10px 0; }
   .app-container .aside {
-    grid-area: aside; }
+    height: min-content;
+    grid-area: aside;
+    display: grid;
+    grid-template-rows: repeat(5, min-content);
+    gap: 20px;
+    padding: 5px;
+    justify-items: center; }
+    .app-container .aside .button {
+      padding: 5px 10px; }
     .app-container .aside .login-container {
       width: min-content;
       white-space: nowrap;
       height: min-content;
-      display: grid; }
+      display: grid;
+      gap: 3px; }
     .app-container .aside .search-by-imdb-container {
       display: grid;
-      justify-items: center; }
+      justify-items: center;
+      gap: 3px; }
       .app-container .aside .search-by-imdb-container .id-input {
         width: 67px; }
+    .app-container .aside .trending-search {
+      width: 200px;
+      display: flex;
+      justify-content: space-around; }
+    .app-container .aside .search-by-name-container {
+      display: grid;
+      gap: 3px;
+      justify-items: center; }
   .app-container .main {
     grid-area: main;
-    width: 100%; }
+    width: 100%;
+    overflow: auto; }
     .app-container .main .popular-movies-container {
       display: flex;
       flex-wrap: nowrap;
@@ -50,8 +68,11 @@
       .app-container .main .small-info > :nth-child(3),
       .app-container .main .small-info > :nth-child(4) {
         padding: 3px; }
-      .app-container .main .small-info .poster {
-        width: 150px; }
+      .app-container .main .small-info .poster-container {
+        display: flex;
+        align-items: center; }
+        .app-container .main .small-info .poster-container .poster {
+          width: 150px; }
       .app-container .main .small-info .heading {
         justify-self: left; }
       .app-container .main .small-info .genres {

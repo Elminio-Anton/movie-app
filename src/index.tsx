@@ -29,6 +29,9 @@ root.render(
                     <Route path={`${homePage}movie`} element = {<MoviePageById/>}>
                         <Route path=":id" element={<MoviePageById/>}></Route>
                     </Route>
+                    <Route path={`${homePage}tv`} element = {<MoviePageById/>}>
+                        <Route path=":id" element={<MoviePageById/>}></Route>
+                    </Route>
                 </Route>
             </Routes>
         </BrowserRouter>

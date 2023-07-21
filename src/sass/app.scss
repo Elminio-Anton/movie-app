@@ -10,6 +10,7 @@ $slightly-darker-then-background: #01a0d0;
 }
 
 .app-container {
+  background-color: $light-blue;
   .header {
     background-color: $dark-blue;
   }
@@ -37,8 +38,47 @@ $slightly-darker-then-background: #01a0d0;
     }
   }
   .aside {
+    .button {
+      border: none;
+      background-color: $dark-blue;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+
     .login-container {
-      background-color: $light-blue;
+      .login-text{user-select: none;}
+    }
+
+    .search-by-imdb-container {
+      .id-input {
+        background-color: $light-light-blue;
+        border: 1px solid $slightly-darker-then-background;
+      }
+    }
+    .trending-search {
+      .select-type, .select-period{
+        background-color: $light-light-blue;
+        border-radius: 3px;
+        border: 1px solid $slightly-darker-then-background;
+        * {
+          border: 1px solid $slightly-darker-then-background;
+        }
+      }
+    }
+
+    .search-by-name-container {
+      .label {
+      }
+
+      .input-name {
+        background-color: $light-light-blue;
+        border: 1px solid $slightly-darker-then-background;
+      }
+
+      .button {
+      }
+    }
+    .show-favourites {
     }
   }
 
@@ -78,8 +118,13 @@ $slightly-darker-then-background: #01a0d0;
     }
 
     .small-info {
-      .poster {
+      .poster-container {
+        background-color: #0d253f;
         border-radius: 10px;
+        .poster {
+          border-radius: 10px;
+
+        }
       }
 
       & > :nth-child(2),

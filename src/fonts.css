@@ -5,6 +5,13 @@
 .login-text {
   font-size: 14px; }
 
+.app-container .aside .login-text {
+  color: #5566cd; }
+
+.app-container .aside .button {
+  color: #01b4e4;
+  letter-spacing: 0.1em; }
+
 .app-container .aside .imdb-search-label {
   text-decoration: dotted underline 0.5px; }
 
