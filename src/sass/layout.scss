@@ -364,7 +364,7 @@
         grid-area: main;
         padding: 5px;
         display: grid;
-        grid-template-rows: minmax(20px, 107px) repeat(2, max-content);
+        grid-template-rows: minmax(20px, max-content) repeat(2, max-content);
         grid-template-columns: 100%;
         gap: 5px 0;
 

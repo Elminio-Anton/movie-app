@@ -1,101 +1,30 @@
-import React, {
-  lazy,
+import {
   ChangeEventHandler,
   Fragment,
   useEffect,
   useState,
   useRef,
-  LegacyRef,
   MouseEventHandler,
   useLayoutEffect,
-  RefObject,
 } from "react";
-import noImage from "./img/no-image-icon.png"
 import "./app.css";
 import "./fonts.css";
 import "./layout.css";
-import ReactLoading from "react-loading";
 import {
-  getIMDBRating,
-  getDirectors,
-  getSearchResults,
-  getTrending,
-  getMovieDetailsByImdbId,
   createRequestToken,
   requestLogin,
   createSession,
   getAccountDetails,
-  getGenres,
-  fetchData,
-  getMovieDetailsByTmdbId,
-  getRecommended,
-  getSimilar,
-  getTVDetailsByTmdbId,
 } from "../src/requests/common";
 import {
-  Link,
   Outlet,
   useNavigate,
   useLocation,
   useSearchParams,
   useParams,
-  Navigate,
-  NavLink,
 } from "react-router-dom";
-import { type } from "@testing-library/user-event/dist/type";
 import { homePage } from "./constants";
-import likeR from "./img/like-r.svg";
-const loadingColor = "#64cde9";
 
-/* const onAppend = (elem: Node, func: Function) => {
-    var observer = new MutationObserver(function (mutations) {
-        mutations.forEach(function (m) {
-            if (m.addedNodes.length) {
-                func(m.addedNodes)
-            }
-        })
-    })
-    observer.observe(elem, { childList: true })
-}
-
-onAppend(document.body, (added: NodeList) => {
-    console.log('!!!!!!', added)
-    //debugger
-    console.log(document.querySelector('[id^=imdb-jsonp]'))
-    console.log(added[0].isEqualNode(document.querySelector('[id^=imdb-jsonp]')))
-    if (added[0] === document.querySelector('[id^=imdb-jsonp]')) {
-        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1');
-        document.querySelector('[id^=imdb-jsonp]')?.setAttribute('async', 'async')
-    }
-}) */
-type Trending = {
-  page: number;
-  results: [MovieInfo];
-  total_pages: number;
-  total_results: number;
-};
-type SearchResults = {
-  results: [MovieInfo];
-  total_pages: number;
-};
-type MovieInfo = {
-  directors: string[];
-  first_air_date: string;
-  genre_ids: number[];
-  genres: { id: number; name: string }[];
-  id: number;
-  imdbId: string;
-  overview: string;
-  original_name: string;
-  original_title: string;
-  poster_path: string | null;
-  imdbRating: string;
-  vote_average: number;
-  vote_count: number;
-  release_date: string;
-  title?: string;
-  media_type:string;
-};
 const request_token = (() => {
   const local = window.localStorage;
   return {
@@ -110,6 +39,7 @@ const request_token = (() => {
     },
   };
 })();
+
 const sessionId = (() => {
   const local = window.localStorage;
   return {
@@ -124,70 +54,15 @@ const sessionId = (() => {
     },
   };
 })();
-let genres = (() => {
-  let innerGenres: { id: number; name: string };
-  return {
-    set: (genres: { id: number; name: string }) => {
-      innerGenres = {...genres,};
-    },
-    getByIds: (genre_ids: number[]) =>
-      Object.entries(innerGenres)
-        .filter((genre) => genre_ids.some((id) => id === +genre[0]))
-        .map((genre) => String(genre[1])),
-    get: () => {
-      return innerGenres;
-    },
-  };
-})();
-const localFavourites = (() => {
-  let local = window.localStorage;
-  return {
-    check: (id: number) => {
-      return (
-        local.getItem("favourites") &&
-        local.getItem("favourites")?.includes(`${id}`)
-      );
-    },
-    add: (id: number) => {
-      if (local.getItem("favourites") !== null)
-        local.setItem("favourites", local.getItem("favourites") + " " + id);
-      else local.setItem("favourites", String(id));
-    },
-    remove: (id: number) => {
-      if (local.getItem("favourites") !== null)
-        local.setItem(
-          "favourites",
-          (local.getItem("favourites") || "").replace(`${id}`, "")
-        );
-    },
-  };
-})();
-getGenres().then(([tvGenres,movieGenres]) => {
-  //console.log('GENRES!!!!!', genres);
-  genres.set(
-    {...tvGenres.genres.reduce(
-      (newGenresObject: Object, genre: { id: number; name: string }) =>
-        Object.assign(newGenresObject, { [genre.id]: genre.name }),
-      {}
-    ),...movieGenres.genres.reduce(
-      (newGenresObject: Object, genre: { id: number; name: string }) =>
-        Object.assign(newGenresObject, { [genre.id]: genre.name }),
-      {}
-    )}
-  );
-  //console.log('GENRES!!!!!', genres);
-});
 
 function LoginLogout() {
   let navigate = useNavigate();
   let location = useLocation();
   let searchParams = new URLSearchParams(location.search);
-  //console.log('searchParams', searchParams, typeof searchParams);
-  //console.log('location', location.pathname, location.search);
-  //debugger
+  const [accountName, setAccountName] = useState("noname");
+
   const initToken = (updateSession: Function, updateName: Function) => {
     if (searchParams.get("approved") === "true") {
-      //console.log('params', searchParams)
       request_token.set(String(searchParams.get("request_token")));
       if (sessionId.check() === false)
         createSession(request_token.get()).then((session_id) => {
@@ -217,26 +92,23 @@ function LoginLogout() {
     } else
       createRequestToken().then((token) => {
         request_token.set(token);
-        //updateState(request_token.get())
       });
-  };
-  //const [token, setToken] = useState(request_token.get())
-  const [sessionOn, setSession] = useState(false);
-  const [accountName, setAccountName] = useState("noname");
-  //console.log('token=', token)
+    };
+    
   const redirectToLogin = () => {
     requestLogin(request_token.get());
   };
+
   const logOut = () => {
     localStorage.clear();
-    setSession(false);
     navigate(`${homePage}`, { replace: true });
-    //window.location.replace(HOME)
-    initToken(setSession, setAccountName);
+    initToken(()=>{}, setAccountName);
   };
+
   useEffect(() => {
-    initToken(setSession, setAccountName);
+    initToken(()=>{}, setAccountName);
   }, []);
+
   return sessionId.get() !== "null" ? (
     <div className="login-container">
       <span className="login-text">You are logged in as {accountName}</span>
@@ -251,39 +123,25 @@ function LoginLogout() {
       </button>
     </div>
   );
-  /*     if (sessionOn)
-            return (
-                <div className='login-container'>
-                    <span className='login-text'>You are logged in as {accountName}</span>
-                    <button onClick={logOut} className='logout-button'>Log out</button>
-                </div>
-            )
-        else
-            return (
-                <div className='login-container'>
-                    <button onClick={redirectToLogin} className='login-button'>Log in</button>
-                </div>
-            ) */
 }
+
 function FindByIMDBId() {
-  //let [searchParams, setSearchParams] = useSearchParams()
   let inputId = useRef<HTMLInputElement>(null);
   let navigate = useNavigate();
   let params = useParams();
+
   const beginSearch: ChangeEventHandler<HTMLInputElement> = () => {
     if (inputId.current !== null) {
-      inputId.current.value = //String(parseInt(event.currentTarget.value) || '')
+      inputId.current.value =
         inputId.current.value
           .split("")
-          .filter((number) => +number === +number)
+          .filter((number) => !Number.isNaN(number))
           .join("");
       if (inputId.current.value === "") navigate(`${homePage}`);
       else navigate(`${homePage}/search_by_imdb_id/${inputId.current.value}`);
-      //console.log('inputId.current.value', typeof inputId.current.value);
     }
-    //params = target.value
   };
-  //<button className='button-search-by-id' id='search-by-id' onClick={searchById}>Search</button>
+
   return (
     <Fragment>
       <div className="search-by-imdb-container">
@@ -293,7 +151,7 @@ function FindByIMDBId() {
           className="imdb-search-label">
           Enter IMDB ID for movie:
         </label>
-        <input 
+        <input
           id="searchImdb"
           ref={inputId}
           value={params.imdbId}
@@ -307,294 +165,21 @@ function FindByIMDBId() {
     </Fragment>
   );
 }
-function SearchIMDBResult() {
-  let params = useParams();
-  let [ready, setReady] = useState(false);
-  let [movieDetails, setMovieDetails]: [MovieInfo | undefined, any] =
-    useState();
-  let [fullId, setFullId] = useState("");
-  useEffect(() => {
-    getMovieDetailsByImdbId(String(params.imdbId)).then((movieData) => {
-      //console.log('movieData', movieData)
-      if (movieData.movie_results.length === 0) setMovieDetails(undefined);
-      else {
-        Promise.all([
-          getDirectors(movieData.movie_results[0].id,movieData.media_type || 'movie'),
-          getIMDBRating(String(params.imdbId)),
-        ]).then((result) => {
-          setMovieDetails(
-            Object.assign(
-              movieData.movie_results[0],
-              //prettier-ignore
-              result[0]
-                ? { directors: result[0].map(({ name }: { name: string }) => name ),}
-                : {},
-              { imdbId: params.imdbId, imdbRating: result[1] },
-              {}
-            )
-          );
-          setReady(true);
-        });
-      }
-    });
-  }, [fullId]);
-  useEffect(() => {
-    if (params.imdbId && params.imdbId.length >= 7)
-      if (
-        fullId === params.imdbId &&
-        movieDetails &&
-        movieDetails.original_title !== "unknown"
-      )
-        setReady(true);
-      else {
-        setFullId(params.imdbId);
-        setReady(false);
-      }
-    else if (ready && params.imdbId && params.imdbId.length < 7)
-      setReady(false);
-  }, [params.imdbId]);
 
-  if (ready && params.imdbId && params.imdbId.length >= 7 && movieDetails)
-    return <SingleMoviePage {...movieDetails} />;
-  else
-    return (
-      <div className="loader-container">
-        <ReactLoading
-          type="spinningBubbles"
-          color={loadingColor}
-          className="loader"
-          height={200}
-          width={200}
-        />
-      </div>
-    );
-}
-const Pagination = ({
-  pages,
-  activePage,
-  route,
-}: {
-  pages: number;
-  activePage: number;
-  route: string;
-}) => {
-  let [searchParams, setSearchParams] = useSearchParams();
-  /* if (!searchParams.get('period')) {
-        searchParams.set('period', 'week')
-        searchParams.set('type', 'movie')
-    } */
-  const PaginationButton = ({ page }: { page: string }) => {
-    return (
-      <NavLink
-        to={`${homePage}/${route}/${page}?${searchParams}`}
-        className={({ isActive }) =>
-          `pagination-link ${
-            isActive ? "active-pagination" : "inactive-pagination"
-          }`
-        }>
-        {" "}
-        {`${page}`}
-      </NavLink>
-    );
-  };
-  const getNearestIntegersAndDots = (
-    currentNumber: number = 1,
-    amountOfNumbersToReturn_odd: number = 1,
-    totalNumbers: number = 1
-  ) => {
-    let amountOfNumbers =
-      amountOfNumbersToReturn_odd % 2
-        ? amountOfNumbersToReturn_odd
-        : amountOfNumbersToReturn_odd - 1;
-    let numbersArr: (number | string)[] = [currentNumber];
-    if (amountOfNumbersToReturn_odd >= totalNumbers)
-      numbersArr = [...new Array(amountOfNumbers)].map((_, i) => i + 1);
-    else if (currentNumber - ((amountOfNumbers - 1) / 2 + 1) <= 0) {
-      numbersArr = [...new Array(amountOfNumbers - 1)].map((_, i) => i + 1);
-      numbersArr.push("...", totalNumbers);
-    } else if (currentNumber + (amountOfNumbers - 1) / 2 + 1 > totalNumbers) {
-      numbersArr = [...new Array(totalNumbers)]
-        .map((_, i) => i + 1)
-        .slice(-amountOfNumbers + 1);
-      numbersArr.unshift(1, "...");
-    } else {
-      for (let i = Math.trunc((amountOfNumbers - 3) / 2); i >= 1; i--) {
-        numbersArr.push(currentNumber - i);
-        numbersArr.push(currentNumber + i);
-      }
-      numbersArr.sort((a, b) => +a - +b);
-      numbersArr.unshift(1, "...");
-      numbersArr.push("...", totalNumbers);
-    }
-    return numbersArr;
-  };
-  return (
-    <ul className="pagination-list">
-      {getNearestIntegersAndDots(activePage, 7, pages).map(
-        (page_number, id) => {
-          if (page_number === "...")
-            return (
-              <span className="dots" key={-id}>
-                ...
-              </span>
-            );
-          else
-            return (
-              <li
-                className="navlink-container"
-                key={page_number}
-                style={{ width: `${String(page_number).length * 15 + 10}px` }}>
-                <PaginationButton page={`${page_number}`}></PaginationButton>
-              </li>
-            );
-        }
-      )}
-    </ul>
-  );
-};
-function Trending() {
-  let params = useParams();
-  let speed: number = 1;
-  let [searchParams, setSearchParams] = useSearchParams();
-  let [loading, setLoading] = useState(true);
-  let [previousX, setPreviousX]: [number | null, any] = useState(null);
-  let [trendingMovies, setTrendingMovies]: [Trending | undefined, any] =
-    useState();
-  let [activeDragScroll, setactiveDragScroll]: [true | false, any] =
-    useState(false);
-  let trendingRef = useRef<HTMLDivElement | null>(null);
-  let mouseMoveHandler: MouseEventHandler = (event) => {
-    if (activeDragScroll) {
-      event.preventDefault();
-      if (trendingRef.current) {
-        trendingRef.current.scrollLeft =
-          trendingRef.current.scrollLeft +
-          ((previousX ?? 0) - event.clientX) * speed;
-        setPreviousX(event.clientX);
-      }
-    }
-  };
-  let mouseDownHandler: MouseEventHandler = (event) => {
-    event.preventDefault();
-    setactiveDragScroll(true);
-    setPreviousX(event.clientX);
-  };
-  let mouseUpHandler: MouseEventHandler = (event) => {
-    setactiveDragScroll(false);
-  };
-  let mouseLeaveHandler: MouseEventHandler = (event) => {
-    setactiveDragScroll(false);
-  };
-  useEffect(() => {
-    getTrending(
-      searchParams.get("type"),
-      searchParams.get("period"),
-      String(params.page ? params.page : "1")
-    ).then((response) => {
-      //console.log('getTrending!!!!!');
-      if (response) {
-        setTrendingMovies({...response,total_pages:response.total_pages<=500?response.total_pages:500});
-        setLoading(false);
-      }
-    });
-  }, [searchParams, params]);
-/*   console.log('!!!!!!!!!!');
-  console.dir(trendingMovies?.results.filter(obj=>obj.media_type!=='movie'));
-  console.log('!!!!!!!!!!'); */
-  return loading ? (
-    <div className="loader-container">
-      <ReactLoading
-        type="spinningBubbles"
-        color="#01b4e4"
-        className="loader"
-        height={200}
-        width={200}
-      />
-    </div>
-  ) : (
-    <Fragment>
-      <div
-        className={`popular-movies-container ${
-          activeDragScroll ? "active-drag-scroll" : ""
-        }`}
-        ref={trendingRef}
-        onMouseDown={mouseDownHandler}
-        onMouseLeave={mouseLeaveHandler}
-        onMouseUp={mouseUpHandler}
-        onMouseMove={mouseMoveHandler}>
-        {trendingMovies &&
-          trendingMovies.results.map((movie) => (
-            <SmallTMDBObjectInfo
-              posterPath={movie.poster_path}
-              originalTitle={movie.original_title || movie.original_name}
-              key={movie.id}
-              genre_ids={movie.genre_ids}
-              tmdbRating={Math.round(movie.vote_average * 10) / 10 || 0}
-              releaseDate={new Date(movie.release_date || movie.first_air_date)}
-              movieId={movie.id}
-              media_type={movie.media_type}
-            />
-          ))}
-      </div>
-      <Pagination
-        pages={Number(trendingMovies && trendingMovies.total_pages)}
-        activePage={Number(params.page) || 1}
-        route="trending"
-      />
-    </Fragment>
-  );
-}
-const IMDBRating = ({
-  imdbRating,
-  title,
-  imdbId,
-}: {
-  imdbRating: string;
-  title: string;
-  imdbId: string;
-}) => {
-  return (
-    <span className="imdbRating">
-      <a href={`https://www.imdb.com/title/tt${imdbId}/?ref_=plg_rt_1`}>
-        <img
-          src="https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/images/imdb_46x22.png"
-          alt={` ${title} on IMDb`}
-        />
-      </a>
-      <span className="rating">
-        {imdbRating}
-        <span className="ofTen">/10</span>
-      </span>
-      <img
-        src="https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/images/imdb_star_22x21.png"
-        className="star"
-      />
-    </span>
-  );
-};
-const TMDBRating = ({ rating }: { rating: number }) => {
-  return (
-    <div className="tmdb-rating">
-      <div className="logo">TMDB</div>
-      <span>
-        <span className="rating">{rating}</span>
-        <span className="ofTen">/10</span>
-      </span>
-    </div>
-  );
-};
+
+
+
+
+
+
+
 
 const FilterTrending = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const typeSelect = useRef<HTMLSelectElement>(null);
   const periodSelect = useRef<HTMLSelectElement>(null);
-  /*     let defaultType = 'movie';
-        let defaultPeriod = 'week';
-        useEffect(() => {
-            defaultType = String(searchParams.get('type') ? searchParams.get('type') : 'movie')
-            defaultPeriod = String(searchParams.get('period') ? searchParams.get('period') : 'week')
-        }, []) */ //new URLSearchParams(typeSelect.current && typeSelect.current.value,periodSelect.current && periodSelect.current.value))}>
+
   useEffect(() => {
     if (typeSelect.current && periodSelect.current) {
       typeSelect.current.value = String(
@@ -605,34 +190,30 @@ const FilterTrending = () => {
       );
     }
   }, []);
+
   return (
     <div className="trending-search">
-      <select className="select-type"
+      <select
+        className="select-type"
         name=""
         id="trending-type"
         ref={typeSelect}
-        /*                 onChange={() => {
-                                let param = String(typeSelect.current && typeSelect.current.value);
-                                setSearchParams({ type: param })
-                            }} */
       >
         <option value="movie">movie</option>
         <option value="all">all</option>
         <option value="tv">tv</option>
       </select>
-      <select className="select-period"
+      <select
+        className="select-period"
         name=""
         id="trending-period"
         ref={periodSelect}
-        /*                 onChange={() => {
-                                let param = String(periodSelect.current && periodSelect.current.value);
-                                setSearchParams({ period: param })
-                            }} */
       >
         <option value="day">day</option>
         <option value="week">week</option>
       </select>
-      <button className="button"
+      <button
+        className="button"
         onClick={() =>
           navigate(
             `${homePage}/trending?type=${
@@ -645,126 +226,9 @@ const FilterTrending = () => {
     </div>
   );
 };
-const SmallTMDBObjectInfo = ({
-  posterPath,
-  originalTitle,
-  genre_ids,
-  tmdbRating,
-  releaseDate,
-  movieId,
-  width = 170,
-  height = 466,
-  media_type,
-}: {
-  posterPath: string | null;
-  originalTitle: string;
-  genre_ids: number[];
-  tmdbRating: number;
-  releaseDate: Date;
-  movieId: number;
-  width?: number;
-  height?: number;
-  media_type:string;
-}) => {
-  let ratingColor =
-    tmdbRating === 0
-      ? "rgb(128,128,128)"
-      : tmdbRating <= 4
-      ? "rgb(255,0,0)"
-      : tmdbRating <= 5
-      ? "rgb(255,165,0)"
-      : `rgb(0,${100 + Math.round((tmdbRating - 5) * 20)},0)`;
-  let ratingStyle = {
-    color: `#0d253f`,
-    background: `radial-gradient(circle, #90cea1 0%, #90cea1 30%, ${ratingColor} 65%)`,
-  };
-  let smallInfoStyle = {
-    width: `${width}px`,
-    height: `${height}px`,
-  };
-  const optimizedGenres = (genre_ids: number[]) => {
-    if(!genre_ids)
-      return null
-    if (
-      genres
-        .getByIds(genre_ids)
-        .reduce((length, genre) => length + genre.length, 0) <= 20
-    )
-      return genres
-        .getByIds(genre_ids)
-        .sort((a, b) => a.length - b.length)
-        .map((genre, i) => (
-          <div className="genre" key={i}>
-            {genre}
-          </div>
-        ));
-    else {
-      let genres_names = genres
-        .getByIds(genre_ids)
-        .sort((a, b) => a.length - b.length);
-      let sliced =
-        genres_names[0].length + genres_names[1].length <= 15
-          ? { visible: genres_names.slice(0, 2), hidden: genres_names.slice(2) }
-          : {
-              visible: genres_names.slice(0, 1),
-              hidden: genres_names.slice(1),
-            };
 
-      return (
-        <Fragment>
-          {sliced.visible.map((genre, i) => (
-            <div className="genre" key={i}>
-              {genre}
-            </div>
-          ))}
-          <span title={sliced.hidden.join(" ")}>
-            {" "}
-            and {sliced.hidden.length + " "}
-            <span className="hidden-genres">more...</span>
-          </span>
-        </Fragment>
-      );
-    }
-  };
-  console.log('!!!!!!!!!!');
-  console.log(media_type);
-  console.log('!!!!!!!!!!');
-  return (
-    <div className="small-info" style={smallInfoStyle}>
-      <a className="poster-container" href={`${homePage}/${media_type || "movie"}/${movieId}`}>
-        <img
-          className="poster"
-          src={posterPath?`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${posterPath}`:noImage}
-          alt="poster"
-          dataset-movieid={movieId}></img>
-      </a>
-      <div className="original-title-container">
-        <span className="heading">Original title:</span>
-        <span className="original-title">{originalTitle}</span>
-      </div>
-      <div className="genres">
-        <span className="heading">Genres:</span>
-        <div className="genres-container">
-          {optimizedGenres(genre_ids)??"no genres"}
-          {/* {genres.getByIds(genre_ids).map((genre, i) => <div className='genre' key={i}>{genre}</div>)} */}
-        </div>
-      </div>
-      <div className="release-date">
-        <span className="heading">Release date:</span>
-        <span>
-          {releaseDate.toLocaleString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          })}
-        </span>
-      </div>
-      <div style={ratingStyle} className="rating">
-        {tmdbRating}
-      </div>
-    </div>
-  );
-};
+
+
 const SearchByTitle = () => {
   let searchInput = useRef<HTMLInputElement>(null);
   let navigate = useNavigate();
@@ -777,6 +241,7 @@ const SearchByTitle = () => {
       }
     }
   };
+
   useEffect(() => {
     if (searchParams.get("search"))
       if (
@@ -785,6 +250,7 @@ const SearchByTitle = () => {
       )
         searchInput.current.value = String(searchParams.get("search"));
   }, [searchParams]);
+
   return (
     <div className="search-by-name-container">
       <label htmlFor="search-by-name" className="label">
@@ -801,89 +267,12 @@ const SearchByTitle = () => {
     </div>
   );
 };
-const SearchResults = () => {
-  let { page } = useParams();
-  let [searchParams, setSearchParams] = useSearchParams();
-  let [searchResults, setSearchResults]: [SearchResults | undefined, any] =
-    useState();
-  //let { movies } = response
-  //params.page
-  useEffect(() => {
-    if (searchParams.get("search")) {
-      getSearchResults(
-        String(searchParams.get("search")),
-        parseInt(page || "1")
-      ).then(setSearchResults);
-    }
-  }, [searchParams, page]);
-  return (
-    <Fragment>
-      <div className="popular-movies-container">
-        {searchResults &&
-          searchResults.results.map((movie) => (
-            <SmallTMDBObjectInfo
-              posterPath={movie.poster_path}
-              originalTitle={movie.original_title || movie.original_name}
-              key={movie.id}
-              genre_ids={movie.genres.map(({ id }) => id)}
-              tmdbRating={movie.vote_average}
-              releaseDate={new Date(movie.release_date || movie.first_air_date)}
-              movieId={movie.id}
-              media_type={movie.media_type}
-            />
-          ))}
-      </div>
-      <Pagination
-        pages={(searchResults && searchResults.total_pages) || 1}
-        activePage={parseInt(page || "1")}
-        route="search"
-      />
-    </Fragment>
-  );
-};
+
+
 const AsideFavourites = () => {
-  return <button className='show-favourites button'>Show favourites</button>;
+  return <button className="show-favourites button">Show favourites</button>;
 };
-const FavouriteIcon = ({ id }: { id: number }) => {
-  let [isFavourite, setIsFavourite] = useState(localFavourites.check(id));
-  const toggleFavourite = () => {
-    if (isFavourite) localFavourites.remove(id);
-    else localFavourites.add(id);
-    setIsFavourite(!isFavourite);
-  };
-  const SVGFavouriteIcom = () => {
-    return (
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M11 3.25H8.86465L7.86465 9.25H3.75V20.75H20.25V9.25H14.25V6.5C14.25 4.70507 12.7949 3.25 11 3.25ZM9.25 19.25H18.75V10.75H12.75V6.5C12.75 5.5335 11.9665 4.75 11 4.75H10.1353L9.25 10.0621V19.25ZM7.75 19.25V10.75H5.25V19.25H7.75Z"
-        />
-      </svg>
-    );
-  };
-  /*     useEffect(() => {
-            console.log('!!!!!!!!!!');
-            console.log('FavouriteIcon useeffect is working!!!');
-            console.log('!!!!!!!!!!');
-            if (localFavourites.check(id))
-                setIsFavourite(true)
-        }, [isFavourite]) */
-  return (
-    <a
-      onClick={toggleFavourite}
-      className={`favourite-icon ${
-        isFavourite ? "favourite" : "non-favourite"
-      }`}>
-      <SVGFavouriteIcom />
-    </a>
-  );
-};
+
 const NotInUseIMDBPlugin = ({
   title,
   imdbId,
@@ -891,20 +280,13 @@ const NotInUseIMDBPlugin = ({
   title: string;
   imdbId: string;
 }) => {
-  /////IMDB rating plugin
-  //let imdbContainer = useRef<HTMLDivElement>(null)
-  //let imdbRating = useRef<HTMLSpanElement>(null)
-
   useLayoutEffect(() => {
-    //console.log("IMDBPlugin useeffect is working!!!!!");
     let script = document.createElement("script");
     script.src =
       "https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/js/rating.js";
     script.async = true;
     script.id = "imdb-script";
-    //imdbRating.current?.appendChild(script)
     if (!document.querySelector("#imdb-script")) {
-      //console.log("IMDBPlugin adding script");
       document.body.appendChild(script);
     }
     return () => {
@@ -917,13 +299,11 @@ const NotInUseIMDBPlugin = ({
   }, []);
   return (
     <Fragment>
-      {/* <div ref={imdbContainer} className='imdb-rating-conteiner'> */}
       <span
-        /* ref={imdbRating}*/ className="imdbRatingPlugin"
+        className="imdbRatingPlugin"
         data-user="ur53822607"
         data-title={`tt${imdbId}`}
         data-style="p1">
-        {/* {(console.log("rendering!!!!!!!!!!!!!!!!"), "")} */}
         <a href={`https://www.imdb.com/title/tt${imdbId}/?ref_=plg_rt_1`}>
           <img
             src="https://ia.media-imdb.com/images/G/01/imdb/plugins/rating/images/imdb_46x22.png"
@@ -931,163 +311,15 @@ const NotInUseIMDBPlugin = ({
           />
         </a>
       </span>
-      {/* </div> */}
     </Fragment>
   );
-  /////IMDB rating plugin
-};
-const SingleMoviePage = (movieDetails: MovieInfo) => {
-  console.dir('SingleMoviePage',movieDetails);
-  let [recommendedMovies, setRecommendedMovies]: [MovieInfo[], any] = useState(
-    []
-  );
-  let [similarMovies, setSimilarMovies]: [MovieInfo[], any] = useState([]);
-  let [loading, setLoading]: [boolean, any] = useState(true);
-  useLayoutEffect(() => {
-    Promise.all([
-      getRecommended(movieDetails.id, 1,movieDetails.media_type),
-      getSimilar(movieDetails.id, 1,movieDetails.media_type),
-    ]).then((responses) => {
-      setRecommendedMovies(responses[0].results);
-      setSimilarMovies(responses[1].results);
-      setLoading(false);
-    });
-  }, []);
-  if (loading)
-  return (
-    <div className="loader-container">
-      <ReactLoading
-        type="spinningBubbles"
-        color={loadingColor}
-        className="loader"
-        height={200}
-        width={200}
-        delay={0}
-      />
-    </div>
-  )
-  else return (
-    <div className="single-movie-page">
-      <div className="short-info-container">
-        <img
-          className="poster"
-          src={movieDetails.poster_path?`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path}`:noImage}
-          alt={movieDetails.original_title || "poster"}
-          srcSet={movieDetails.poster_path?`https://www.themoviedb.org/t/p/w300_and_h450_bestv2${movieDetails.poster_path} 1x, https://www.themoviedb.org/t/p/w600_and_h900_bestv2${movieDetails.poster_path} 2x`:noImage}
-        />
-        <div className="short-info">
-          <p className="title">Title: {movieDetails.original_title}</p>
-          <div className="ratings-container">
-            <IMDBRating
-              imdbRating={movieDetails.imdbRating}
-              title={movieDetails.original_title}
-              imdbId={movieDetails.imdbId}
-            />
-            <TMDBRating
-              rating={Math.trunc(movieDetails.vote_average * 10) / 10}
-            />
-          </div>
-          <FavouriteIcon id={movieDetails.id} />
-        </div>
-      </div>
-      <div className="movie-description">
-        <p className="overview">{movieDetails.overview}</p>
-        {/* <p className='imdb-rating'>IMDB rating:</p> */}
-        <div className="minor-info">
-          <p className="genres">
-            Genres:{" "}
-            {movieDetails.genre_ids
-              .map((id) => genres.getByIds([id]))
-              .join(" ")}
-          </p>
-          {movieDetails.directors ? (
-            <span className="directors">
-              {movieDetails.directors.length > 1 ? "Directors:" : "Director:"}{" "}
-              {movieDetails.directors.join(", ")}
-            </span>
-          ) : (
-            ""
-          )}
-        </div>
-      </div>
-      <div className="similar-movies-container">
-        <h5 className="h5">Similar movies</h5>
-        <div className="scroll-wrapper">
-          <div className="similar-movies">
-            {similarMovies.map((movieInfo: MovieInfo, i) => (
-              <SmallestTMDBObjectInfo movieInfo={movieInfo} key={i} />
-            ))}
-          </div>
-        </div>
-      </div>
-      <div className="recommended-movies-container">
-        <h5 className="h5">Recommended movies</h5>
-        <div className="scroll-wrapper">
-          <div className="recommended-movies">
-            {recommendedMovies.map((movieInfo: MovieInfo, i) => (
-              <SmallestTMDBObjectInfo movieInfo={movieInfo} key={i} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-const MoviePageById = () => {
-  const id = String(useParams().id);
-  const movieOrTV = useLocation().pathname.includes('movie')?'movie':'tv'
-  const movieOrTVShouldBeFetched = movieOrTV==='tv'?getTVDetailsByTmdbId:getMovieDetailsByTmdbId
-  const [movieDetails, setMovieDetails]: [MovieInfo | undefined, any] =
-    useState();
-  useEffect(() => {
-    movieOrTVShouldBeFetched(id).then((movieData) => {
-      console.log('movieData', movieData)
-      if (movieData.length === 0) setMovieDetails(undefined);
-      else {
-        Promise.all([getDirectors(id,movieOrTV), getIMDBRating(movieData.imdb_id)]).then(
-          ([directors, imdb_rating]) => {
-            setMovieDetails(
-              Object.assign(
-                movieData,
-                //prettier-ignore
-                directors.length
-                ? { directors: directors.map(({ name }: { name: string }) => name ),}
-                : {},
-                { imdbId: movieData.imdb_id, imdbRating: imdb_rating },
-                {
-                  genre_ids: movieData.genres.map(
-                    (genre: { id: string }) => genre.id
-                  ),
-                }
-              )
-            );
-          }
-        );
-      }
-    });
-  }, []);
-  /*   getMovieDetailsByTmdbId(id).then((fetchedMovieDetails) => {
-    setMovieDetails(fetchedMovieDetails);
-  }); */
-  //return <SingleMoviePageMemo {...movieDetails} />;
-  if (movieDetails) return <SingleMoviePage {...movieDetails} media_type={movieOrTV} />;
-  else return <></>;
 };
 
-const SmallestTMDBObjectInfo = ({ movieInfo }: { movieInfo: MovieInfo }) => {
-  return (
-    <a className="smallest" href={`${homePage}/movie/${movieInfo.id}`}>
-      <img
-        className="poster"
-        src={`https://www.themoviedb.org/t/p/w250_and_h141_face/${movieInfo.poster_path}`}
-        alt={movieInfo.original_title}
-      />
-      <span className="title">
-        {movieInfo.title || movieInfo.original_title}
-      </span>
-    </a>
-  );
-};
+
+
+
+
+
 
 function App() {
   return (
@@ -1108,15 +340,9 @@ function App() {
       <main className="main">
         <Outlet />
       </main>
-     {/*  <footer className="footer"></footer> */}
     </Fragment>
   );
 }
-/* console.log('!!!!!!!!!!');
-getRecommended("385687", 1).then((data) => console.dir(data.results.map((movie:MovieInfo)=>movie.title+'__'+movie.original_title)));
-console.log('!!!!!!!!!!'); */
-//385687
-export { MoviePageById, SearchResults, Trending, SearchIMDBResult };
+
+//export { MoviePageById, SearchResults, SearchIMDBResult };
 export default App;
-
-

@@ -1,10 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App,{SearchIMDBResult,Trending,SearchResults,MoviePageById} from './App';
+import App from './App';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import {homePage} from './constants'
+import { Trending } from './routes/trending';
+import { MoviePageById } from './routes/movie-page-by-id';
+import {SearchIMDBResult} from './routes/search-imdb-result';
+import { SearchResults } from './routes/search-results';
+
 
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('Failed to find the root element');
