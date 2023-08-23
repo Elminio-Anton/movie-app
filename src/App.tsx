@@ -166,14 +166,6 @@ function FindByIMDBId() {
   );
 }
 
-
-
-
-
-
-
-
-
 const FilterTrending = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -227,8 +219,6 @@ const FilterTrending = () => {
   );
 };
 
-
-
 const SearchByTitle = () => {
   let searchInput = useRef<HTMLInputElement>(null);
   let navigate = useNavigate();
@@ -266,11 +256,6 @@ const SearchByTitle = () => {
       </button>
     </div>
   );
-};
-
-
-const AsideFavourites = () => {
-  return <button className="show-favourites button">Show favourites</button>;
 };
 
 const NotInUseIMDBPlugin = ({
@@ -315,12 +300,6 @@ const NotInUseIMDBPlugin = ({
   );
 };
 
-
-
-
-
-
-
 function App() {
   return (
     <Fragment>
@@ -335,7 +314,6 @@ function App() {
         <FindByIMDBId />
         <FilterTrending />
         <SearchByTitle />
-        <AsideFavourites />
       </aside>
       <main className="main">
         <Outlet />
@@ -344,5 +322,4 @@ function App() {
   );
 }
 
-//export { MoviePageById, SearchResults, SearchIMDBResult };
 export default App;

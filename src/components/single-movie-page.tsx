@@ -6,7 +6,6 @@ import {loadingColor} from "../constants"
 import noImage from "../img/no-image-icon.png";
 import { IMDBRating } from "./imdb-rating";
 import { TMDBRating } from "./tmdb-rating";
-import { FavouriteIcon } from "./favourite-icon";
 import { genres } from "../state/genres";
 
 
@@ -70,7 +69,6 @@ export const SingleMoviePage = (movieDetails: MovieInfo) => {
                 rating={Math.trunc(movieDetails.vote_average * 10) / 10}
               />
             </div>
-            <FavouriteIcon id={movieDetails.id} />
           </div>
         </div>
         <div className="movie-description">
